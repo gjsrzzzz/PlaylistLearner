@@ -52,7 +52,7 @@
             @if (ShowVideos.Contains(item.Name))
             {
                 <div style="@AspectStyle(item.Format)">
-                    <iframe frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay"
+                    <iframe frameborder="0" style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay"
                             src="@Embed(item.Link)">
                     </iframe>
                 </div>
