@@ -1,6 +1,6 @@
 {
-  "name": "Dancer",
-  "short_name": "Dancer",
+  "name": "Playlist Learner",
+  "short_name": "Playlist Learner",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

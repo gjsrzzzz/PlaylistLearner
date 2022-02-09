@@ -1,6 +1,7 @@
 ﻿namespace PlaylistLearner.Model;
 
-public class PlaylistItem
+public enum ItemType
 {
-    
-}
+    Default, VideoLink, PrivateLink
+};
+public record PlaylistItem(ItemType type, string Name, string AltName, string Description, string Link);
