@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using PlaylistLearner.Model
+@using Microsoft.VisualBasic.FileIO
 @inject IJSRuntime JsRuntime
 
 <PageTitle>Playlist Learner</PageTitle>
@@ -10,13 +11,19 @@
     {
     <div class="card p-0 mb-2" style="width: 100%;max-width: 40rem">
         <div class="card-body">
-            @if (item.Link.Length > 0)
+            @if (item.Type.Equals(ItemType.HyperLink))
+            {
+                <h5 class="card-title">
+                    <a href="@item.Link.Trim()" target="_blank">@item.Name</a>
+                </h5>
+            }
+            else if (item.Link.Length > 0)
             {
                 <h5 class="card-title"><a href="" @onclick="() => ShowVideo(item.Name)" @onclick:preventDefault  target="_blank">@item.Name</a>&nbsp;
                     @if (ShowVideos.Contains(item.Name))
                     {
                         <button type="button" @onclick="() => HideVideo(item.Name)" class="btn btn-primary">Hide</button>
-                        <a href="@item.Link" @onclick="() => ShowVideo(item.Name)" target="_blank">Video</a>
+                        <a href="@item.Link.Trim()" @onclick="() => ShowVideo(item.Name)" target="_blank">Video</a>
                     }
                     else
                     {
@@ -28,7 +35,7 @@
             else
             {
                 <h5 class="card-title">
-                    <h2>@item.Name</h2>
+                    @item.Name
                 </h5>
             }
             @if (item.AltName.Length > 0)
@@ -91,6 +98,7 @@
 
     string Embed(string link)
     {
+        link = link.Trim();
         link = link.Contains("watch") ? link.Replace("/watch?v=", "/embed/") : 
             link.Replace("https://youtu.be/", "https://www.youtube.com/embed/");
         link += "?autoplay=1";

@@ -2,7 +2,7 @@
 
 public enum ItemType
 {
-    Default, VideoLink, PrivateLink
+    Default, VideoLink, PrivateLink, HyperLink
 };
 public enum Format
 {
