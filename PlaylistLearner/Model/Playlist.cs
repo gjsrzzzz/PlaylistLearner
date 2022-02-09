@@ -47,7 +47,7 @@ public class Playlist
                 "Single sombrero. 456 around the man. 456 man turn anticlock-wise to woman right hand over head. Setenta to dile que no",
                 "https://www.youtube.com/watch?v=lFaJ4W0LfCM"),
             new PlaylistItem(ItemType.Default, Format.Default, "Bayamo por abajo", "Bayamo below",
-                "Single sombrero. 456 around the man. 456 man turn anticlock-wise to woman right hand over head. Setenta to dile que no",
+                "Single sombrero. 456 around the man. 123 left hand arm lock 456 come out. 123456 sombrero and hat. Dile que no.",
                 "https://www.youtube.com/watch?v=KO9y_5HyWKg"),
             new PlaylistItem(ItemType.Default, Format.Default, "Montana", "Eighty-four",
                 "Two hand not hat sombrero (123456). Anti clockwise 123 woman. 456 outside turn for man. Then sombrero y dile que no",
