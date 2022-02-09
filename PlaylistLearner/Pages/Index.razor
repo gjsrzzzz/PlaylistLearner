@@ -1,50 +1,55 @@
 ﻿@page "/"
 @using PlaylistLearner.Model
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Playlist Learner</PageTitle>
 
 <h1>Dance Moves</h1>
-
-<div class="container">
+<div class="container p-0">
     @foreach (var item in Playlist.Salsa.Items)
     {
-        <div class="row">
+    <div class="card p-0 mb-2" style="width: 100%;max-width: 40rem">
+        <div class="card-body">
             @if (item.Link.Length > 0)
             {
-                <div class="col-sm themed-grid-col"><h2><a href="" @onclick="() => ShowVideo(item.Name)" @onclick:preventDefault  target="_blank">@item.Name</a>&nbsp;
+                <h5 class="card-title"><a href="" @onclick="() => ShowVideo(item.Name)" @onclick:preventDefault  target="_blank">@item.Name</a>&nbsp;
                     @if (ShowVideos.Contains(item.Name))
                     {
                         <button type="button" @onclick="() => HideVideo(item.Name)" class="btn btn-primary">Hide</button>
                         <a href="@item.Link" @onclick="() => ShowVideo(item.Name)" target="_blank">Video</a>
-                        <div style="position:relative;padding-bottom:56.25%;">
-                            <iframe frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay"
-                                    src="@Embed(item.Link)">
-                            </iframe>
-                        </div>
                     }
                     else
                     {
 
                         <!--button type="button" @onclick="() => ShowVideo(move.Name)" class="btn btn-primary">Show</button -->
                     }
-                    </h2></div>
+                </h5>
             }
             else
             {
-                <div class="col-sm themed-grid-col">
+                <h5 class="card-title">
                     <h2>@item.Name</h2>
-                </div>
+                </h5>
             }
             @if (item.AltName.Length > 0)
             {
-                <div class="col-sm themed-grid-col">@item.AltName</div>
+                <h6 class="card-subtitle mb-2 text-muted">@item.AltName</h6>
             }
             @if (item.Description.Length > 0)
             {
-                <div class="col-sm themed-grid-col">@item.Description</div>
+                <h6 class="card-text">@item.Description</h6>
             }
 
 
+        </div>
+            @if (ShowVideos.Contains(item.Name))
+            {
+                <div style="@AspectStyle(item.Format)">
+                    <iframe frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay"
+                            src="@Embed(item.Link)">
+                    </iframe>
+                </div>
+            }
         </div>
     }
 </div>
@@ -52,6 +57,28 @@
 @code
 {
     private HashSet<string> ShowVideos { get; } = new();
+    public int Height { get; set; }
+    public int Width { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var dimension = await JsRuntime.InvokeAsync<WindowDimension>("getDimensions");
+        Height = dimension.Height;
+        Width = dimension.Width;
+        await base.OnInitializedAsync();
+    }
+
+    string AspectStyle(Format format)
+    {
+        var style = format switch
+        {
+            Format.Default => "position:relative;padding-bottom:56.25%;",
+            Format.Mobile => "position:relative;padding-bottom:176.33%;",
+            _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
+            };
+        return style;
+    }
+
     void ShowVideo(string name)
     {
         ShowVideos.Clear();
@@ -68,5 +95,11 @@
             link.Replace("https://youtu.be/", "https://www.youtube.com/embed/");
         link += "?autoplay=1";
         return link;
+    }
+    
+    public class WindowDimension
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 }
