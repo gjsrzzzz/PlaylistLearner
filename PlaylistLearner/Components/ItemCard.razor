@@ -1,0 +1,72 @@
+﻿<div class="card p-0 mb-2" style="width: 100%;max-width: 40rem">
+    <div class="card-body">
+        @if (Type.Equals(ItemType.HyperLink))
+        {
+            <h5 class="card-title">
+                <a href="@Link.Trim()" target="_blank">@Name</a>
+            </h5>
+        }
+        else if (Link.Length > 0)
+        {
+            <h5 class="card-title"><a href="" @onclick="() => ShowVideo(Name)" @onclick:preventDefault  target="_blank">@Name</a>&nbsp;
+                @if (ShowVideos.Contains(Name))
+                {
+                    <button type="button" @onclick="() => HideVideo(Name)" class="btn btn-primary">Hide</button>
+                    <a href="@Link.Trim()" @onclick="() => ShowVideo(Name)" target="_blank">Video</a>
+                }
+                else
+                {
+
+                    <!--button type="button" @onclick="() => ShowVideo(move.Name)" class="btn btn-primary">Show</button -->
+                }
+            </h5>
+        }
+        else
+        {
+            <h5 class="card-title">
+                @Name
+            </h5>
+        }
+        @if (AltName.Length > 0)
+        {
+            <h6 class="card-subtitle mb-2 text-muted">@AltName</h6>
+        }
+        @if (Description.Length > 0)
+        {
+            <h6 class="card-text">@Description</h6>
+        }
+
+
+    </div>
+        @if (ShowVideos.Contains(Name))
+        {
+            <VideoPlayer Item="@Item" />
+        }
+    </div>
+@code {
+    [Parameter]
+    public PlaylistItem Item { get; set; }
+
+    string Name => Item.Name;
+    string Link => Item.Link;
+    ItemType Type=> Item.Type;
+    string AltName => Item.AltName;
+    string Description => Item.Description;
+    
+    [CascadingParameter]
+    private HashSet<string> ShowVideos { get; set; }
+    [CascadingParameter]
+    public PlaylistLearner.Pages.Index Parent { get; set; }
+    
+    void ShowVideo(string name)
+    {
+        ShowVideos.Clear();
+        ShowVideos.Add(name);
+        Parent.RefreshState();
+    }
+    void HideVideo(string name)
+    {
+        ShowVideos.Remove(name);
+        Parent.RefreshState();
+    }
+}
