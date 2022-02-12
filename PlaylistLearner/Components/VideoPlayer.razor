@@ -14,11 +14,18 @@
         if (State == PlayerState.Playing)
         {
             <button type="button" @onclick="Pause" class="btn btn-primary">Pause</button>
-        }
+         }
         else
         {
             <button type="button" @onclick="Play" class="btn btn-primary">Play</button>
         }
+        <button type="button" @onclick="Back" class="btn btn-primary">-10s</button>
+        <button type="button" @onclick="Forward" class="btn btn-primary">+10s</button>
+        <button type="button" @onclick="Slow" class="btn btn-primary">S</button>
+        <button type="button" @onclick="Medium" class="btn btn-primary">M</button>
+        <button type="button" @onclick="Normal" class="btn btn-primary">N</button>
+        <button type="button" @onclick="Mute" class="btn btn-primary">Mute</button>
+
         <button type="button" @onclick="Close" class="btn btn-primary">Close</button>
         <span>@State</span>
     }
@@ -120,6 +127,41 @@
     private void Pause()
     {
         JsRuntime.InvokeVoidAsync("pauseVideo");
+    }
+    
+    private void Back()
+    {
+        JsRuntime.InvokeVoidAsync("backVideo");
+    }
+    
+    private void Forward()
+    {
+        JsRuntime.InvokeVoidAsync("forwardVideo");
+    }
+    
+    private void Slow()
+    {
+        JsRuntime.InvokeVoidAsync("slowSpeed");
+    }
+    
+    private void Mute()
+    {
+        JsRuntime.InvokeVoidAsync("muteVideo");
+    }
+    
+    private void UnMute()
+    {
+        JsRuntime.InvokeVoidAsync("unMuteVideo");
+    }
+    
+    private void Medium()
+    {
+        JsRuntime.InvokeVoidAsync("mediumSpeed");
+    }
+    
+    private void Normal()
+    {
+        JsRuntime.InvokeVoidAsync("normalSpeed");
     }
     
     private void Close()

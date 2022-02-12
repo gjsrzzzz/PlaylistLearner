@@ -78,7 +78,39 @@
     {
         player.stopVideo();
     }
+    function muteVideo()
+    {
+        player.mute();
+    }
+    function unMuteVideo()
+    {
+        player.unMute();
+    }
+    function backVideo()
+    {
+        var time=player.getCurrentTime()-10;
+        if (time<0) time=0;
+        player.seekTo(time, true);
+    }
 
+    function forwardVideo()
+    {
+        var time=player.getCurrentTime()+10;
+        if (time>=player.getDuration()) time=player.getDuration();
+        player.seekTo(time, true);
+    }
+    function slowSpeed()
+    {
+        player.setPlaybackRate(0.25);
+    }
+    function mediumSpeed()
+    {
+        player.setPlaybackRate(0.5);
+    }   
+    function normalSpeed()
+    {
+        player.setPlaybackRate(1);
+    }
     function seekTo(seconds, allowSeekAhead)
     {
         player.seekTo(seconds, allowSeekAhead);
@@ -90,7 +122,7 @@
     }
 
     function onPlayerStateChange(event) {
-//        console.log("Player State Change "+JSON.stringify(event));
+        console.log("Player State Change "+event.data);
         videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
     }
 </script>
