@@ -11,7 +11,6 @@
             <h5 class="card-title"><a href="" @onclick="() => ShowVideo(Name)" @onclick:preventDefault  target="_blank">@Name</a>&nbsp;
                 @if (ShowVideos.Contains(Name))
                 {
-                    <button type="button" @onclick="() => HideVideo(Name)" class="btn btn-primary">Hide</button>
                     <a href="@Link.Trim()" @onclick="() => ShowVideo(Name)" target="_blank">Video</a>
                 }
                 else
@@ -64,9 +63,5 @@
         ShowVideos.Add(name);
         Parent.RefreshState();
     }
-    void HideVideo(string name)
-    {
-        ShowVideos.Remove(name);
-        Parent.RefreshState();
-    }
+
 }

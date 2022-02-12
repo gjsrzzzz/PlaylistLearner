@@ -32,6 +32,67 @@
             height: window.innerHeight
         };
     };
+
+    prepareYouTube();
+    
+    function prepareYouTube() {
+        var tag = document.createElement('script');
+        tag.id = 'iframe-youtube-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    var player;
+    var videoPlayer;
+    function onYouTubeIframeAPIReady() {
+        console.log("YouTube API ready");
+    }
+
+    function prepareVideo(dotnetRef) {
+        videoPlayer=dotnetRef;
+        const id ='youtube-iframe';
+        var element = document.getElementById(id)
+//        console.log("element "+JSON.stringify(element)+' ' +element);
+        player = new YT.Player(id, {
+            playerVars: {
+                'playsinline': 1
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+//        console.log("Created player "+JSON.stringify(player));
+    }
+    
+    function playVideo()
+    {
+        player.playVideo();
+    }
+    function pauseVideo()
+    {
+        player.pauseVideo();
+    }
+    function stopVideo()
+    {
+        player.stopVideo();
+    }
+
+    function seekTo(seconds, allowSeekAhead)
+    {
+        player.seekTo(seconds, allowSeekAhead);
+    }
+
+    function onPlayerReady(event) {
+//        console.log("Player ready "+JSON.stringify(event));
+        videoPlayer.invokeMethodAsync('OnPlayerReady', event);
+    }
+
+    function onPlayerStateChange(event) {
+//        console.log("Player State Change "+JSON.stringify(event));
+        videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
+    }
 </script>
 </body>
 

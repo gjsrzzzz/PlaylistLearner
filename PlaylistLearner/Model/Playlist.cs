@@ -19,7 +19,7 @@ public class Playlist
             new PlaylistItem(ItemType.Default, Format.Default, "Catwalk turn", "", "", ""),
             new PlaylistItem(ItemType.Default, Format.Mobile, "Half Turn", "", "", "https://youtu.be/kJwnuHlT8lQ"),
             new PlaylistItem(ItemType.Default, Format.Mobile, "Exhíbela", "Show her off", "Show her off with left hand", "https://youtu.be/--SPhRWYJcI"),
-            new PlaylistItem(ItemType.Default, Format.Mobile, "Sacala", "Take it out", "Show her off with right hand", "https://www.youtube.com/watch?v=pgd4jcPJHow"),
+            new PlaylistItem(ItemType.Default, Format.Default, "Sacala", "Take it out", "Show her off with right hand", "https://www.youtube.com/watch?v=pgd4jcPJHow"),
             
             new PlaylistItem(ItemType.Default, Format.Mobile, "Exhíbela ronde", "", "", "https://youtu.be/fLf2sVVcO5Q"),
             new PlaylistItem(ItemType.Default, Format.Default, "Dile que no", "Cross Body Lead", "", ""),
