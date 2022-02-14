@@ -14,6 +14,16 @@
 </head>
 
 <body>
+
+    <div id="player-holder" class="card p-0" style="width: 100%;max-width: 40rem; position:absolute;overflow: hidden;z-index: 100;display: none">
+        <div id="player-div" style="position:relative;padding-bottom:56.25%;left:0px;top:0px;">
+          <iframe id="youtube-iframex" frameborder="0" style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay;fullscreen;"
+               src="https://www.youtube.com/embed/pgd4jcPJHow?autoplay=1&enablejsapi=1&controls=1&modestbranding=1&origin=https://localhost:7290">
+        </iframe>
+        </div>
+    </div>
+
+
 <div id="app">Loading...</div>
 
 <div id="blazor-error-ui">
@@ -45,16 +55,25 @@
 
     var player;
     var videoPlayer;
+    var playerX;
+    var playerHolder;
+    const myObserver = new ResizeObserver(entries => {
+        console.log("robserve "+ JSON.stringify(entries));
+        alignVideo();
+
+    });
+    const myObserver2 = new IntersectionObserver(entries => {
+        console.log("mobserve "+ JSON.stringify(entries));
+    });
+
+
     function onYouTubeIframeAPIReady() {
         console.log("YouTube API ready");
-    }
+        playerX = document.getElementById('player-div');
+        myObserver.observe(playerX);
+        playerHolder = document.getElementById('player-holder');
 
-    function prepareVideo(dotnetRef) {
-        videoPlayer=dotnetRef;
-        const id ='youtube-iframe';
-        var element = document.getElementById(id)
-//        console.log("element "+JSON.stringify(element)+' ' +element);
-        player = new YT.Player(id, {
+        player = new YT.Player('youtube-iframex', {
             playerVars: {
                 'playsinline': 1
             },
@@ -63,7 +82,65 @@
                 'onStateChange': onPlayerStateChange
             }
         });
+
+
+    }
+
+    function closeVideo() {
+        var iframeElement = document.getElementById('youtube-iframe-container');
+//        myObserver.disconnect();
+
+//        playerHolder.appendChild(playerX);
+    }
+    
+    function alignVideo()
+    {
+        var iframeElement = document.getElementById('youtube-iframe-container');
+        if (iframeElement !== undefined) {
+            var playerXRect = playerX.getBoundingClientRect();
+            console.log("player rect", playerXRect.width, playerXRect.height);
+            iframeElement.style.width=playerXRect.width+"px";
+            iframeElement.style.height=playerXRect.height+"px";
+
+            var rect = iframeElement.parentElement.getBoundingClientRect();
+            console.log(rect.top, rect.right, rect.bottom, rect.left);
+            var bodyRect = document.body.getBoundingClientRect();
+            var offsetTop = rect.top - bodyRect.top;
+            var offsetLeft = rect.left - bodyRect.left;
+            console.log(bodyRect.top, bodyRect.right, bodyRect.bottom, bodyRect.left);
+            playerHolder.style.top = offsetTop + "px";
+//        playerHolder.style.left=offsetLeft+"px";
+//        playerHolder.style.width=rect2.width+"px";
+            playerHolder.style.display = null;
+        }
+    }
+    
+    function prepareVideo(dotnetRef, paddingBottom) {
+        videoPlayer=dotnetRef;
+        playerX.style.paddingBottom=paddingBottom;
+        alignVideo()
+
+//        player.seekTo(0, true);
+
+//        parent.insertBefore(playerX, iframeElement);
+        
+//        console.log("element "+JSON.stringify(element)+' ' +element);
+ /*       player = new YT.Player('youtube-iframe', {
+            playerVars: {
+                'playsinline': 1
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });*/
 //        console.log("Created player "+JSON.stringify(player));
+    }
+
+    function loadVideoById(videoId,
+                       startSeconds)
+    {
+        player.loadVideoById(videoId, startSeconds);
     }
     
     function playVideo()
@@ -117,13 +194,17 @@
     }
 
     function onPlayerReady(event) {
+        if (videoPlayer) {
 //        console.log("Player ready "+JSON.stringify(event));
-        videoPlayer.invokeMethodAsync('OnPlayerReady', event);
+            videoPlayer.invokeMethodAsync('OnPlayerReady', event);
+        }
     }
 
     function onPlayerStateChange(event) {
         console.log("Player State Change "+event.data);
-        videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
+        if (videoPlayer) {
+            videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
+        }
     }
 </script>
 </body>

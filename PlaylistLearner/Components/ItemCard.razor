@@ -1,4 +1,6 @@
-﻿<div class="card p-0 mb-2" style="width: 100%;max-width: 40rem">
+﻿@inject IJSRuntime JsRuntime
+
+<div class="card p-0 mb-2 ml-0" style="width: 100%;max-width: 40rem">
     <div class="card-body">
         @if (Type.Equals(ItemType.HyperLink))
         {
@@ -59,6 +61,7 @@
     
     void ShowVideo(string name)
     {
+        JsRuntime.InvokeVoidAsync("closeVideo");
         ShowVideos.Clear();
         ShowVideos.Add(name);
         Parent.RefreshState();

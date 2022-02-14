@@ -1,5 +1,6 @@
 ﻿@using System.Xml
 @using System.Text.Json
+@using System.ComponentModel
 
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavManager
@@ -7,7 +8,7 @@
 <div>
     @if (!Ready)
     {
-        <span>Loading ... </span>
+        <button type="button" class="btn btn-secondary">Loading ...</button>
     }
     else
     {
@@ -32,10 +33,12 @@
         <span>@State</span>
     }
 </div>
-<div style="@AspectStyle(Item.Format)">
-    <iframe id="youtube-iframe" frameborder="0" style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay;fullscreen;" 
-            src="@Embed(Item.Link)">
-    </iframe>
+<div>
+<div id="youtube-iframe-container" style="width: 50px; height:50px">
+    <!--iframe id="youtube-iframe" frameborder="0" style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay;fullscreen;" 
+    src="@Embed(Item.Link)">
+    </iframe-->
+</div>
 </div>
 
 @code {
@@ -63,7 +66,8 @@
         if (firstRender)
         {
             var dotNetObjectReference = DotNetObjectReference.Create(this);
-            await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference);
+            await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent());
+            await JsRuntime.InvokeVoidAsync("loadVideoById", GetId(),"0");
         }
     }
     
@@ -79,6 +83,33 @@
         return style;
     }
     
+        
+    string GetPaddingPercent()
+    {
+        var style = Item.Format switch
+        {
+            Format.Default => "56.25%",
+            Format.Mobile => "176.33%",
+            _ => throw new ArgumentOutOfRangeException(nameof(Item.Format), Item.Format, null)
+            };
+        return style;
+    }
+
+    string GetId()
+    {
+        var link = Item.Link.Trim();
+        int index = link.IndexOf("?v=");
+        if (index > 0) link = link[(index + 3)..];
+        else
+        {
+            index = link.LastIndexOf("/");
+            if (index > 0)
+            {
+                link=link[(index + 1)..];
+            }
+        }
+        return link;
+    }
     
     string Embed(string link)
     {
@@ -98,6 +129,10 @@
         if (eventData.GetProperty("data").TryGetInt32(out var data))
         {
             State =(PlayerState)Enum.ToObject(typeof(PlayerState), data);
+            if (State != PlayerState.Unstarted)
+            {
+                Ready = true;
+            }
             if (State == PlayerState.Playing)
             {
                 HasStartedPlaying = true;
