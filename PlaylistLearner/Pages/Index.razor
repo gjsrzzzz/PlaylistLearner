@@ -2,7 +2,7 @@
 @using PlaylistLearner.Components
 @inject IJSRuntime JsRuntime
 
-<PageTitle>Playlist Learner</PageTitle>
+<PageTitle>@Playlist.Name</PageTitle>
 
 <h1 style="font-size: 32pt">@Playlist.Name</h1>
 @if (!string.IsNullOrEmpty(Playlist.Link))
