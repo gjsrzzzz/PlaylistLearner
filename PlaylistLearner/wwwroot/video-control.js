@@ -9,6 +9,25 @@ var player;
 var videoPlayer;
 var playerX;
 var playerHolder;
+var muted=false;
+var isSlow=false;
+var lastMuted=true;
+
+function poll( )
+{
+    if (!isSlow && player!==undefined && player.isMuted!==undefined && player.isMuted()!==undefined) {
+        muted = player.isMuted();
+    }
+    
+    if (videoPlayer!==undefined) {
+        if (lastMuted!==muted) {
+            console.log("Sending muted= "+muted);
+            videoPlayer.invokeMethodAsync('OnMuteChange', muted);
+            lastMuted=muted;
+        }
+    }
+    setTimeout(poll, 500);
+}
 
 function onYouTubeIframeAPIReady() {
     console.log("Video Initializing "+window.location);
@@ -24,7 +43,7 @@ function onYouTubeIframeAPIReady() {
             'origin': window.location,
             'autoplay': 1,
             'controls':1,
-            'modestbranding':1
+            'modestbranding':1,
         },
         events: {
             'onReady': onPlayerReady,
@@ -34,6 +53,7 @@ function onYouTubeIframeAPIReady() {
     var youTubeIFrame = document.getElementById('youtube-iframe');
     youTubeIFrame.style.position='absolute';
     console.log("Video Control ready "+JSON.stringify(player));
+    setTimeout(poll, 500);
 }
 
 function closeVideo() {
@@ -62,33 +82,18 @@ function alignVideo()
     }
 }
 
-function prepareVideo(dotnetRef, paddingBottom) {
+function prepareVideo(dotnetRef, paddingBottom, videoId, startSeconds, endSeconds) {
     videoPlayer=dotnetRef;
     playerX.style.paddingBottom=paddingBottom;
-    alignVideo()
-
-//        player.seekTo(0, true);
-
-//        parent.insertBefore(playerX, iframeElement);
-
-//        console.log("element "+JSON.stringify(element)+' ' +element);
-    /*       player = new YT.Player('youtube-iframe', {
-               playerVars: {
-                   'playsinline': 1
-               },
-               events: {
-                   'onReady': onPlayerReady,
-                   'onStateChange': onPlayerStateChange
-               }
-           });*/
-//        console.log("Created player "+JSON.stringify(player));
+    alignVideo();
+    loadVideoById(videoId, startSeconds, endSeconds);
 }
 
 function loadVideoById(videoId,
-                       startSeconds)
+                       startSeconds, endSeconds)
 {
     console.log("loading video "+JSON.stringify(player));
-    player.loadVideoById(videoId, startSeconds);
+    player.loadVideoById(videoId, startSeconds, endSeconds);
 }
 
 function playVideo()
@@ -106,10 +111,12 @@ function stopVideo()
 function muteVideo()
 {
     player.mute();
+    muted=true;
 }
 function unMuteVideo()
 {
     player.unMute();
+    muted=false;
 }
 function backVideo()
 {
@@ -126,15 +133,26 @@ function forwardVideo()
 }
 function slowSpeed()
 {
+    muted=player.isMuted();
+    player.mute();
     player.setPlaybackRate(0.25);
+    isSlow=true;
 }
 function mediumSpeed()
 {
+    player.mute();
     player.setPlaybackRate(0.5);
+    isSlow=true;
 }
 function normalSpeed()
 {
+    if (!muted)
+    {
+        unMuteVideo();
+    }
     player.setPlaybackRate(1);
+    isSlow=false;
+    muted = player.isMuted();
 }
 function seekTo(seconds, allowSeekAhead)
 {
@@ -142,10 +160,8 @@ function seekTo(seconds, allowSeekAhead)
 }
 
 function onPlayerReady(event) {
-    if (videoPlayer) {
-//        console.log("Player ready "+JSON.stringify(event));
-        videoPlayer.invokeMethodAsync('OnPlayerReady', event);
-    }
+    muteVideo();
+    console.log("Player ready");
 }
 
 function onPlayerStateChange(event) {

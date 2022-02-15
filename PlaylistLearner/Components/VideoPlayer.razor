@@ -27,7 +27,14 @@
             <button type="button" @onclick="Slow" class="btn btn-primary">S</button>
             <button type="button" @onclick="Medium" class="btn btn-primary">M</button>
             <button type="button" @onclick="Normal" class="btn btn-primary">N</button>
-            <button type="button" @onclick="Mute" class="btn btn-primary">Mute</button>
+            @if (Muted)
+            {
+                <button type="button" @onclick="Unmute" class="btn btn-primary">Unmute</button>
+            }
+            else
+            {
+                <button type="button" @onclick="Mute" class="btn btn-primary">Mute</button>
+            }
         }
         <button type="button" @onclick="Close" class="btn btn-primary">Close</button>
         <span>@State</span>
@@ -46,6 +53,7 @@
     public PlaylistItem Item { get; set; }
 
     public bool Ready { get; set; } = false;
+    public bool Muted { get; set; } = false;
     public bool HasStartedPlaying { get; set; } = false;
     public PlayerState State { get; set; } = PlayerState.Unstarted;
 
@@ -66,8 +74,7 @@
         if (firstRender)
         {
             var dotNetObjectReference = DotNetObjectReference.Create(this);
-            await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent());
-            await JsRuntime.InvokeVoidAsync("loadVideoById", GetId(),"0");
+            await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent(), GetId(),"0");
         }
     }
     
@@ -151,13 +158,11 @@
         var info= eventData.GetProperty("target").GetProperty("playerInfo").Deserialize<PlayerInfo>();
         return info;
     }
-
+    
     [JSInvokable] // This is required in order to JS be able to execute it
-    public void OnPlayerReady(JsonElement eventData)
+    public void OnMuteChange(bool muted)
     {
-        // This breaks the state call back for some reason
-//        var playerInfo=GetPlayerInfo(eventData);
-        Ready = true;
+        Muted = muted;  
         StateHasChanged();
     }
     
@@ -190,6 +195,12 @@
     {
         JsRuntime.InvokeVoidAsync("muteVideo");
     }
+    
+    private void Unmute()
+    {
+        JsRuntime.InvokeVoidAsync("unMuteVideo");
+    }
+
     
     private void UnMute()
     {
