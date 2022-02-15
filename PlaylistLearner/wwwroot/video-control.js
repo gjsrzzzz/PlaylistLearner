@@ -50,13 +50,14 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-iframe', {
         height: '100%',
         width: '100%',
-        videoId: 'pgd4jcPJHow',
+        videoId: 'ue-P8DoJ29Q',
         playerVars: {
             'playsinline': 1,
             'origin': window.location,
             'autoplay': 1,
             'controls':1,
             'modestbranding':1,
+            'rel':0
         },
         events: {
             'onReady': onPlayerReady,

@@ -6,7 +6,7 @@ public enum ItemType
 };
 public enum Format
 {
-    Default, Mobile
+    Default, Standard, Mobile
 };
 
 public record PlaylistItem(ItemType Type, Format Format, string Name, string AltName, string Description, string Link,
@@ -15,6 +15,7 @@ public record PlaylistItem(ItemType Type, Format Format, string Name, string Alt
     public string PaddingPercent => Format switch
     {
         Format.Default => "56.25%",
+        Format.Standard => "75%",
         Format.Mobile => "176.33%",
         _ => throw new ArgumentOutOfRangeException(nameof(Format), Format, null)
     };
