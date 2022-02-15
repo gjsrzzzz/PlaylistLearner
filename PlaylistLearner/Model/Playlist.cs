@@ -3,7 +3,48 @@
 public class Playlist
 {
     public string Name { get; init; }
+    public string Link { get; init; }
+    public string LinkText { get; init; }
     public List<PlaylistItem> Items { get; } = new();
+
+    public static Playlist Academia2005 = new Playlist()
+    {
+        Name = "Academia de Salsa 2005",
+        Link = "https://www.academiadesalsa.com/", LinkText = "Academia de Salsa",
+        Items =
+        {
+            new PlaylistItem(ItemType.Default, Format.Default, "Basic Mambo", "",
+                "", "https://youtu.be/wcdeGOd8e88", 6, 13),
+            new PlaylistItem(ItemType.Default, Format.Default, "Basic Mambo Side to Side", "",
+            "", "https://youtu.be/wcdeGOd8e88", 13, 21),
+            new PlaylistItem(ItemType.Default, Format.Default, "Open and Close", "",
+                "", "https://youtu.be/wcdeGOd8e88", 21, 31),
+            new PlaylistItem(ItemType.Default, Format.Default, "Dile que no", "",
+                "", "https://youtu.be/wcdeGOd8e88", 31, 36),
+            new PlaylistItem(ItemType.Default, Format.Default, "Guapea", "",
+                "", "https://youtu.be/wcdeGOd8e88", 36, 40),
+            new PlaylistItem(ItemType.Default, Format.Default, "Enchufe", "",
+                "", "https://youtu.be/wcdeGOd8e88", 40, 49),
+            new PlaylistItem(ItemType.Default, Format.Default, "Enchufe doble", "",
+                "", "https://youtu.be/wcdeGOd8e88", 49, 62),
+            new PlaylistItem(ItemType.Default, Format.Default, "Enchufe por detras", "",
+                "", "https://youtu.be/wcdeGOd8e88", 62, 68),
+            new PlaylistItem(ItemType.Default, Format.Default, "Sacala", "",
+                "", "https://youtu.be/wcdeGOd8e88", 68, 76),
+            new PlaylistItem(ItemType.Default, Format.Default, "Sombrero", "",
+                "", "https://youtu.be/wcdeGOd8e88", 76, 87),
+            new PlaylistItem(ItemType.Default, Format.Default, "Sombrero con mambo", "",
+                "", "https://youtu.be/wcdeGOd8e88", 87, 101),
+            new PlaylistItem(ItemType.Default, Format.Default, "Ocho", "",
+                "", "https://youtu.be/wcdeGOd8e88", 101, 117),
+            new PlaylistItem(ItemType.Default, Format.Default, "Vacilala", "",
+                "", "https://youtu.be/wcdeGOd8e88", 117, 133),
+            new PlaylistItem(ItemType.Default, Format.Default, "Dedo", "",
+                "", "https://youtu.be/wcdeGOd8e88", 133, 137),
+            new PlaylistItem(ItemType.Default, Format.Default, "Up close and personal", "",
+                "", "https://youtu.be/wcdeGOd8e88", 137, 150)
+        }
+    };
 
     public static Playlist Salsa = new Playlist()
     {

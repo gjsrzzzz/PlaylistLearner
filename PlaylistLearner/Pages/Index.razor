@@ -4,11 +4,15 @@
 
 <PageTitle>Playlist Learner</PageTitle>
 
-<h1 style="font-size: 32pt">Dance Moves</h1>
+<h1 style="font-size: 32pt">@Playlist.Name</h1>
+@if (!string.IsNullOrEmpty(Playlist.Link))
+{
+    <p><a target="_blank" href="@Playlist.Link">@Playlist.LinkText</a> </p>
+}
 <div class="p-0 m-0">
     <CascadingValue Value="@ShowVideos">
     <CascadingValue Value="@this">
-        @foreach (var item in Playlist.Salsa.Items)
+        @foreach (var item in Playlist.Items)
         {
             <ItemCard Item="@item"/>
         }
@@ -21,6 +25,7 @@
     private HashSet<string> ShowVideos { get; } = new();
     public int Height { get; set; }
     public int Width { get; set; }
+    public Playlist Playlist => Playlist.Academia2005;
 
     protected override async Task OnInitializedAsync()
     {

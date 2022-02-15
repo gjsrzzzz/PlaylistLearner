@@ -8,4 +8,4 @@ public enum Format
 {
     Default, Mobile
 };
-public record PlaylistItem(ItemType Type, Format Format, string Name, string AltName, string Description, string Link);
+public record PlaylistItem(ItemType Type, Format Format, string Name, string AltName, string Description, string Link, int Start=-1, int End=-1);

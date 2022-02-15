@@ -21,7 +21,7 @@ function poll( )
     
     if (videoPlayer!==undefined) {
         if (lastMuted!==muted) {
-            console.log("Sending muted= "+muted);
+//            console.log("Sending muted= "+muted);
             videoPlayer.invokeMethodAsync('OnMuteChange', muted);
             lastMuted=muted;
         }
@@ -92,7 +92,7 @@ function prepareVideo(dotnetRef, paddingBottom, videoId, startSeconds, endSecond
 function loadVideoById(videoId,
                        startSeconds, endSeconds)
 {
-    console.log("loading video "+JSON.stringify(player));
+    console.log("loading video ",startSeconds, endSeconds);
     player.loadVideoById(videoId, startSeconds, endSeconds);
 }
 

@@ -74,7 +74,14 @@
         if (firstRender)
         {
             var dotNetObjectReference = DotNetObjectReference.Create(this);
-            await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent(), GetId(),"0");
+            if (Item.Start >= 0 && Item.End > 0)
+            {
+                await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent(), GetId(),Item.Start, Item.End);
+            }
+            else
+            {
+                await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent(), GetId(),"0");
+            }
         }
     }
     
