@@ -2,8 +2,9 @@
 @using System.Text.Json
 @using System.ComponentModel
 
-@inject IJSRuntime JsRuntime
+@inject VideoControl Video
 @inject NavigationManager NavManager
+
 
 <div>
     @if (!Ready)
@@ -16,24 +17,31 @@
         {
             if (State == PlayerState.Playing)
             {
-                <button type="button" @onclick="Pause" class="btn btn-primary">Pause</button>
+                <button type="button" @onclick="Video.Pause" class="btn btn-primary">Pause</button>
             }
             else
             {
-                <button type="button" @onclick="Play" class="btn btn-primary">Play</button>
+                @if (HasEndAndIsEnded)
+                {
+                    <button type="button" @onclick="RePlay" class="btn btn-primary">Replay</button>
+                }
+                else
+                {
+                    <button type="button" @onclick="Video.Play" class="btn btn-primary">Play</button>
+                }
             }
-            <button type="button" @onclick="Back" class="btn btn-primary">-10s</button>
-            <button type="button" @onclick="Forward" class="btn btn-primary">+10s</button>
-            <button type="button" @onclick="Slow" class="btn btn-primary">S</button>
-            <button type="button" @onclick="Medium" class="btn btn-primary">M</button>
-            <button type="button" @onclick="Normal" class="btn btn-primary">N</button>
+            <button type="button" @onclick="Video.Back" class="btn btn-primary">-10s</button>
+            <button type="button" @onclick="Video.Forward" class="btn btn-primary">+10s</button>
+            <button type="button" @onclick="Video.Slow" class="btn btn-primary">S</button>
+            <button type="button" @onclick="Video.Medium" class="btn btn-primary">M</button>
+            <button type="button" @onclick="Video.Normal" class="btn btn-primary">N</button>
             @if (Muted)
             {
-                <button type="button" @onclick="Unmute" class="btn btn-primary">Unmute</button>
+                <button type="button" @onclick="Video.Unmute" class="btn btn-primary">Unmute</button>
             }
             else
             {
-                <button type="button" @onclick="Mute" class="btn btn-primary">Mute</button>
+                <button type="button" @onclick="Video.Mute" class="btn btn-primary">Mute</button>
             }
         }
         <button type="button" @onclick="Close" class="btn btn-primary">Close</button>
@@ -41,13 +49,8 @@
     }
 </div>
 <div>
-<div id="youtube-iframe-container" style="width: 50px; height:50px">
-    <!--iframe id="youtube-iframe" frameborder="0" style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay;fullscreen;" 
-    src="@Embed(Item.Link)">
-    </iframe-->
+    <div id="video-area" style="width: 50px; height:50px"></div>
 </div>
-</div>
-
 @code {
     [Parameter]
     public PlaylistItem Item { get; set; }
@@ -55,14 +58,10 @@
     public bool Ready { get; set; } = false;
     public bool Muted { get; set; } = false;
     public bool HasStartedPlaying { get; set; } = false;
+    public double Time { get; set; } = 0;
     public PlayerState State { get; set; } = PlayerState.Unstarted;
+    public bool HasEndAndIsEnded => Item.HasEnd && Time > Item.End;
 
-    public enum PlayerState
-    {
-        Unstarted=-1,
-        Ended=0, Playing=1, Paused=2, Buffering=3, VideoCued=4
-    }
-       
     [CascadingParameter]
     private HashSet<string> ShowVideos { get; set; }
     [CascadingParameter]
@@ -73,99 +72,45 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            var dotNetObjectReference = DotNetObjectReference.Create(this);
             if (Item.Start >= 0 && Item.End > 0)
             {
-                await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent(), GetId(),Item.Start, Item.End);
+                await Video.PrepareVideo(this, Item.PaddingPercent, Item.VideoId, Item.Start, Item.ExtendedEnd);
             }
             else
             {
-                await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent(), GetId(),"0");
+                await Video.PrepareVideo(this, Item.PaddingPercent, Item.VideoId);
             }
         }
     }
     
-    string AspectStyle(Format format)
-    {
-        var style = format switch
-        {
-            Format.Default => "position:relative;padding-bottom:56.25%;",
-            Format.Mobile => "position:relative;padding-bottom:176.33%;",
-            _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
-            };
-        if (!Ready) style += ";display: none";
-        return style;
-    }
     
-        
-    string GetPaddingPercent()
+    public async Task RePlay()
     {
-        var style = Item.Format switch
-        {
-            Format.Default => "56.25%",
-            Format.Mobile => "176.33%",
-            _ => throw new ArgumentOutOfRangeException(nameof(Item.Format), Item.Format, null)
-            };
-        return style;
+        await Video.SeekTo(Item.Start);
+        await Video.Play();
     }
-
-    string GetId()
-    {
-        var link = Item.Link.Trim();
-        int index = link.IndexOf("?v=");
-        if (index > 0) link = link[(index + 3)..];
-        else
-        {
-            index = link.LastIndexOf("/");
-            if (index > 0)
-            {
-                link=link[(index + 1)..];
-            }
-        }
-        return link;
-    }
-    
-    string Embed(string link)
-    {
-        link = link.Trim();
-        link = link.Contains("watch") ? link.Replace("/watch?v=", "/embed/") : 
-            link.Replace("https://youtu.be/", "https://www.youtube.com/embed/");
-        link += "?autoplay=1&enablejsapi=1&controls=1&modestbranding=1&origin="+NavManager.Uri;
-        if (link.EndsWith("/")) link=link[..^1];
-        return link;
-    }
-
+   
     [JSInvokable] // This is required in order to JS be able to execute it
-    public void OnPlayerStateChange(JsonElement eventData)
+    public async Task OnPlayerStateChange(JsonElement eventData)
     {
-        var text = eventData.GetRawText();
-        var playerInfo=GetPlayerInfo(eventData);
-        if (eventData.GetProperty("data").TryGetInt32(out var data))
+        if (!Video.TryGetPlayerState(eventData, out var state)) return;
+        State = state;
+        if (State != PlayerState.Unstarted)
         {
-            State =(PlayerState)Enum.ToObject(typeof(PlayerState), data);
-            if (State != PlayerState.Unstarted)
-            {
-                Ready = true;
-            }
-            if (State == PlayerState.Playing)
-            {
-                HasStartedPlaying = true;
-            }
-            StateHasChanged();
+            Ready = true;
         }
-        else
+        if (State == PlayerState.Playing)
         {
-            int a = 1;
+            HasStartedPlaying = true;
         }
-
+        if (State == PlayerState.Ended && Item.HasEnd)
+        {
+            await Video.SeekTo(Item.Start);
+//            await Video.Pause();
+        }
+        StateHasChanged();
     }
 
-    private PlayerInfo? GetPlayerInfo(JsonElement eventData)
-    {
-        var info= eventData.GetProperty("target").GetProperty("playerInfo").Deserialize<PlayerInfo>();
-        return info;
-    }
-    
     [JSInvokable] // This is required in order to JS be able to execute it
     public void OnMuteChange(bool muted)
     {
@@ -173,74 +118,20 @@
         StateHasChanged();
     }
     
-    private void Play()
+    [JSInvokable] // This is required in order to JS be able to execute it
+    public async Task OnTimeChange(double time)
     {
-        JsRuntime.InvokeVoidAsync("playVideo");
-    }
-
-    private void Pause()
-    {
-        JsRuntime.InvokeVoidAsync("pauseVideo");
-    }
-    
-    private void Back()
-    {
-        JsRuntime.InvokeVoidAsync("backVideo");
-    }
-    
-    private void Forward()
-    {
-        JsRuntime.InvokeVoidAsync("forwardVideo");
-    }
-    
-    private void Slow()
-    {
-        JsRuntime.InvokeVoidAsync("slowSpeed");
-    }
-    
-    private void Mute()
-    {
-        JsRuntime.InvokeVoidAsync("muteVideo");
-    }
-    
-    private void Unmute()
-    {
-        JsRuntime.InvokeVoidAsync("unMuteVideo");
-    }
-
-    
-    private void UnMute()
-    {
-        JsRuntime.InvokeVoidAsync("unMuteVideo");
-    }
-    
-    private void Medium()
-    {
-        JsRuntime.InvokeVoidAsync("mediumSpeed");
-    }
-    
-    private void Normal()
-    {
-        JsRuntime.InvokeVoidAsync("normalSpeed");
+        Time = time;
+        if (HasEndAndIsEnded)
+        {
+            await Video.Pause();
+        }
+        StateHasChanged();
     }
     
     private void Close()
     {
         ShowVideos.Clear();
         Parent.RefreshState();
-    }
-
-    public class VideoData 
-    {
-        public string video_id { get; set; }
-        public string author { get; set; }
-        public string title { get; set; }
-        public string video_quality { get; set; }
-    }
-    
-    public class PlayerInfo 
-    {
-        public string videoUrl { get; set; }
-        public VideoData videoData { get; set; }
     }
 }

@@ -12,21 +12,34 @@ var playerHolder;
 var muted=false;
 var isSlow=false;
 var lastMuted=false;
+var reportedTime=-1;
 
-function poll( )
+async function poll( )
 {
-    if (!isSlow && player!==undefined && player.isMuted!==undefined && player.isMuted()!==undefined) {
+    if (player===undefined || player.isMuted===undefined)
+    {
+        setTimeout(poll, 200);
+        return;
+    }
+    if (!isSlow && player.isMuted()!==undefined) {
         muted = player.isMuted();
     }
     
     if (videoPlayer!==undefined) {
         if (lastMuted!==muted) {
 //            console.log("Sending muted= "+muted);
-            videoPlayer.invokeMethodAsync('OnMuteChange', muted);
+            await videoPlayer.invokeMethodAsync('OnMuteChange', muted);
             lastMuted=muted;
         }
+        var time= player.getCurrentTime();
+        if (time!==undefined && reportedTime!==time)
+        {
+//            console.log("Sending time= "+time);
+            await videoPlayer.invokeMethodAsync('OnTimeChange', time);
+            reportedTime=time;
+        }
     }
-    setTimeout(poll, 500);
+    setTimeout(poll, 200);
 }
 
 function onYouTubeIframeAPIReady() {
@@ -62,14 +75,15 @@ function closeVideo() {
 
 function alignVideo()
 {
-    var iframeElement = document.getElementById('youtube-iframe-container');
-    if (iframeElement !== undefined) {
+    var videoAreaElement = document.getElementById('video-area');
+    if (videoAreaElement !== undefined) {
+        playerHolder.style.display = null;
         var playerXRect = playerX.getBoundingClientRect();
         console.log("player rect", playerXRect.width, playerXRect.height);
-        iframeElement.style.width=playerXRect.width+"px";
-        iframeElement.style.height=playerXRect.height+"px";
+        videoAreaElement.style.width=playerXRect.width+"px";
+        videoAreaElement.style.height=playerXRect.height+"px";
 
-        var rect = iframeElement.parentElement.getBoundingClientRect();
+        var rect = videoAreaElement.parentElement.getBoundingClientRect();
         console.log(rect.top, rect.right, rect.bottom, rect.left);
         var bodyRect = document.body.getBoundingClientRect();
         var offsetTop = rect.top - bodyRect.top;
@@ -78,7 +92,6 @@ function alignVideo()
         playerHolder.style.top = offsetTop + "px";
 //        playerHolder.style.left=offsetLeft+"px";
 //        playerHolder.style.width=rect2.width+"px";
-        playerHolder.style.display = null;
     }
 }
 
@@ -95,7 +108,7 @@ function loadVideoById(videoId,
     console.log("loading video ",startSeconds, endSeconds);
     if (endSeconds>0)
     {
-        loadVideoById({'videoId': videoId,
+        player.loadVideoById({'videoId': videoId,
             'startSeconds': startSeconds,
             'endSeconds': endSeconds});
     }
@@ -169,6 +182,7 @@ function seekTo(seconds, allowSeekAhead)
 
 function onPlayerReady(event) {
     muteVideo();
+    player.setLoop(true);
     console.log("Player ready");
 }
 
