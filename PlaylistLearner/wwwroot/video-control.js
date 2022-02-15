@@ -11,7 +11,7 @@ var playerX;
 var playerHolder;
 var muted=false;
 var isSlow=false;
-var lastMuted=true;
+var lastMuted=false;
 
 function poll( )
 {
@@ -93,7 +93,15 @@ function loadVideoById(videoId,
                        startSeconds, endSeconds)
 {
     console.log("loading video ",startSeconds, endSeconds);
-    player.loadVideoById(videoId, startSeconds, endSeconds);
+    if (endSeconds>0)
+    {
+        loadVideoById({'videoId': videoId,
+            'startSeconds': startSeconds,
+            'endSeconds': endSeconds});
+    }
+    else {
+        player.loadVideoById(videoId, startSeconds);
+    }
 }
 
 function playVideo()
