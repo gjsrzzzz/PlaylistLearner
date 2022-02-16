@@ -112,8 +112,9 @@ function alignVideo()
 function prepareVideo(paddingBottom, videoId, startSeconds, endSeconds) {
     playerX.style.paddingBottom=paddingBottom;
     alignVideo();
-    if (currentVideoId===videoId)
+    if (false) //currentVideoId===videoId)
     {
+        console.log("going to",startSeconds);
         seekTo(startSeconds, true);
         playVideo();
     }
@@ -125,14 +126,15 @@ function prepareVideo(paddingBottom, videoId, startSeconds, endSeconds) {
 function loadVideoById(videoId,
                        startSeconds, endSeconds)
 {
-    console.log("loading video ",startSeconds, endSeconds);
     if (endSeconds>0)
     {
+        console.log("loading video ",startSeconds, endSeconds);
         player.loadVideoById({'videoId': videoId,
             'startSeconds': startSeconds,
             'endSeconds': endSeconds});
     }
     else {
+        console.log("loading video ",startSeconds);
         player.loadVideoById(videoId, startSeconds);
     }
     currentVideoId=videoId;
