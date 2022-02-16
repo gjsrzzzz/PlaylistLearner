@@ -5,14 +5,16 @@ tag.src = 'https://www.youtube.com/iframe_api';
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-var player;
-var videoPlayer;
-var playerX;
-var playerHolder;
-var muted=false;
-var isSlow=false;
-var lastMuted=false;
-var reportedTime=-1;
+let player;
+let videoPlayer;
+let playerX;
+let playerHolder;
+let muted=false;
+let isSlow=false;
+let lastMuted=false;
+let reportedTime=-1;
+let currentVideoId='ue-P8DoJ29Q';
+let playerReady=false;
 
 async function poll( )
 {
@@ -42,6 +44,14 @@ async function poll( )
     setTimeout(poll, 200);
 }
 
+function videoControlReady(dotnetRef) {
+    videoPlayer=dotnetRef;
+    console.log("Video player control ready");
+    if (playerReady) {
+        videoPlayer.invokeMethodAsync('OnPlayerReady');
+    }
+}
+
 function onYouTubeIframeAPIReady() {
     console.log("Video Initializing "+window.location);
     playerX = document.getElementById('player-div');
@@ -50,7 +60,7 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-iframe', {
         height: '100%',
         width: '100%',
-        videoId: 'ue-P8DoJ29Q',
+        videoId: currentVideoId,
         playerVars: {
             'playsinline': 1,
             'origin': window.location,
@@ -70,8 +80,9 @@ function onYouTubeIframeAPIReady() {
     setTimeout(poll, 500);
 }
 
-function closeVideo() {
-
+async function closeVideo() {
+    await stopVideo();
+    playerHolder.style.display = "none";
 }
 
 function alignVideo()
@@ -91,16 +102,24 @@ function alignVideo()
         var offsetLeft = rect.left - bodyRect.left;
         console.log(bodyRect.top, bodyRect.right, bodyRect.bottom, bodyRect.left);
         playerHolder.style.top = offsetTop + "px";
+
+        videoAreaElement.parentElement.parentElement.scrollIntoView(true);
 //        playerHolder.style.left=offsetLeft+"px";
 //        playerHolder.style.width=rect2.width+"px";
     }
 }
 
-function prepareVideo(dotnetRef, paddingBottom, videoId, startSeconds, endSeconds) {
-    videoPlayer=dotnetRef;
+function prepareVideo(paddingBottom, videoId, startSeconds, endSeconds) {
     playerX.style.paddingBottom=paddingBottom;
     alignVideo();
-    loadVideoById(videoId, startSeconds, endSeconds);
+    if (currentVideoId===videoId)
+    {
+        seekTo(startSeconds, true);
+        playVideo();
+    }
+    else {
+        loadVideoById(videoId, startSeconds, endSeconds);
+    }
 }
 
 function loadVideoById(videoId,
@@ -116,6 +135,7 @@ function loadVideoById(videoId,
     else {
         player.loadVideoById(videoId, startSeconds);
     }
+    currentVideoId=videoId;
 }
 
 function playVideo()
@@ -181,15 +201,18 @@ function seekTo(seconds, allowSeekAhead)
     player.seekTo(seconds, allowSeekAhead);
 }
 
-function onPlayerReady(event) {
+async function onPlayerReady(event) {
     muteVideo();
     player.setLoop(true);
     console.log("Player ready");
+    if (videoPlayer) {
+        await videoPlayer.invokeMethodAsync('OnPlayerReady');
+    }
+    playerReady=true;
 }
 
-function onPlayerStateChange(event) {
-    console.log("Player State Change "+event.data);
+async function onPlayerStateChange(event) {
     if (videoPlayer) {
-        videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
+        await videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
     }
 }

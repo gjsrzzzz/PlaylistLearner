@@ -5,49 +5,52 @@
 @inject VideoControl Video
 @inject NavigationManager NavManager
 
-
-<div>
-    @if (!Ready)
-    {
-        <button type="button" class="btn btn-secondary">Loading ...</button>
-    }
-    else
-    {
-        if (HasStartedPlaying)
+<table>
+    <tr style="font-size: 2rem">
+        @if (!Video.Ready)
         {
-            if (State == PlayerState.Playing)
+            <td >Loading ...</td>
+        }
+        else
+        {
+            @if (Video.HasStartedPlaying)
             {
-                <button type="button" @onclick="Video.Pause" class="btn btn-primary">Pause</button>
+                <td class="justify-content-start">
+                    @if (Video.State == PlayerState.Playing)
+                    {<i @onclick="Video.Pause" class="bi bi-pause-circle"></i>}
+                    else
+                    {
+                        @if (HasEndAndIsEnded)
+                        {<i @onclick="Video.RePlay" class="bi bi-arrow-counterclockwise"></i>}
+                        else
+                        {<i @onclick="Video.Play" class="bi bi-play-circle"></i>}
+                    }<span>&thinsp;</span><i @onclick="Video.Back" class="bi bi-skip-forward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" class="bi bi-skip-backward-circle"></i>
+                </td>
+
+                <td class="justify-content-center">
+                    <button type="button" @onclick="Video.Slow" class="btn btn-outline-dark">Slow</button>
+                    <button type="button" @onclick="Video.Medium" class="btn btn-outline-dark">Med</button>
+                    <button type="button" @onclick="Video.Normal" class="btn btn-outline-dark">Norm</button>
+                </td>
+                <td class="justify-content-end">
+                    @if (Video.Muted)
+                    {<i @onclick="Video.Unmute" class="bi bi-volume-mute"></i>}
+                    else
+                    {<i @onclick="Video.Unmute" class="bi bi-volume-down"></i>}
+                    @if (Item.Type.Equals(ItemType.HyperLink))
+                    {<span>&thinsp;</span><a href="@Item.Link.Trim()" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>}
+                    <span>&thinsp;</span><i @onclick="Close" class="bi bi-x-circle"></i>
+                </td>
             }
             else
             {
-                @if (HasEndAndIsEnded)
-                {
-                    <button type="button" @onclick="RePlay" class="btn btn-primary">Replay</button>
-                }
-                else
-                {
-                    <button type="button" @onclick="Video.Play" class="btn btn-primary">Play</button>
-                }
-            }
-            <button type="button" @onclick="Video.Back" class="btn btn-primary">-10s</button>
-            <button type="button" @onclick="Video.Forward" class="btn btn-primary">+10s</button>
-            <button type="button" @onclick="Video.Slow" class="btn btn-primary">S</button>
-            <button type="button" @onclick="Video.Medium" class="btn btn-primary">M</button>
-            <button type="button" @onclick="Video.Normal" class="btn btn-primary">N</button>
-            @if (Muted)
-            {
-                <button type="button" @onclick="Video.Unmute" class="btn btn-primary">Unmute</button>
-            }
-            else
-            {
-                <button type="button" @onclick="Video.Mute" class="btn btn-primary">Mute</button>
+                <td class="justify-content-end">
+                    <i @onclick="Close" class="bi bi-x-circle"></i>
+                </td>
             }
         }
-        <button type="button" @onclick="Close" class="btn btn-primary">Close</button>
-        <span>@State</span>
-    }
-</div>
+    </tr>
+</table>
 <div>
     <div id="video-area" style="width: 50px; height:50px"></div>
 </div>
@@ -55,12 +58,7 @@
     [Parameter]
     public PlaylistItem Item { get; set; }
 
-    public bool Ready { get; set; } = false;
-    public bool Muted { get; set; } = false;
-    public bool HasStartedPlaying { get; set; } = false;
-    public double Time { get; set; } = 0;
-    public PlayerState State { get; set; } = PlayerState.Unstarted;
-    public bool HasEndAndIsEnded => Item.HasEnd && Time > Item.End;
+    public bool HasEndAndIsEnded => Item.HasEnd && Video.Time > Item.End;
 
     [CascadingParameter]
     private HashSet<string> ShowVideos { get; set; }
@@ -82,46 +80,19 @@
             }
         }
     }
-    
-    
-    public async Task RePlay()
+
+    public async Task OnPlayerStateChange()
     {
-        await Video.SeekTo(Item.Start);
-        await Video.Play();
-    }
-   
-    [JSInvokable] // This is required in order to JS be able to execute it
-    public async Task OnPlayerStateChange(JsonElement eventData)
-    {
-        if (!Video.TryGetPlayerState(eventData, out var state)) return;
-        State = state;
-        if (State != PlayerState.Unstarted)
-        {
-            Ready = true;
-        }
-        if (State == PlayerState.Playing)
-        {
-            HasStartedPlaying = true;
-        }
-        if (State == PlayerState.Ended && Item.HasEnd)
+        if (Video.State == PlayerState.Ended && Item.HasEnd)
         {
             await Video.SeekTo(Item.Start);
 //            await Video.Pause();
         }
         StateHasChanged();
     }
-
-    [JSInvokable] // This is required in order to JS be able to execute it
-    public void OnMuteChange(bool muted)
-    {
-        Muted = muted;  
-        StateHasChanged();
-    }
     
-    [JSInvokable] // This is required in order to JS be able to execute it
-    public async Task OnTimeChange(double time)
+    public async Task OnTimeChange()
     {
-        Time = time;
         if (HasEndAndIsEnded)
         {
             await Video.Pause();
@@ -129,9 +100,16 @@
         StateHasChanged();
     }
     
-    private void Close()
+    private async Task Close()
     {
+        await Video.Close();
         ShowVideos.Clear();
         Parent.RefreshState();
     }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+
 }
