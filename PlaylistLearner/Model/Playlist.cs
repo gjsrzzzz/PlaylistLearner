@@ -13,6 +13,9 @@ public class Playlist
         Link = "https://www.academiadesalsa.com/", LinkText = "Academia de Salsa",
         Items =
         {
+            
+            new PlaylistItem(ItemType.Default, Format.Standard, "Intro", "",
+                "", "https://youtu.be/PppjDo0kLg8", 849, 875),
             new PlaylistItem(ItemType.Default, Format.Standard, "Basic Mambo", "",
                 "", "https://youtu.be/ue-P8DoJ29Q", 6, 13),
             new PlaylistItem(ItemType.Default, Format.Standard, "Basic Mambo Side to Side", "",
@@ -58,7 +61,9 @@ public class Playlist
             new PlaylistItem(ItemType.Default, Format.Standard, "Setenta con Adorno y Echeverria", "Seventy with adornment & Echeverria",
                     "", "https://youtu.be/CPNBTjto-Jc", 237, 279),
             new PlaylistItem(ItemType.Default, Format.Standard, "Son & Turning on the spot", "",
-                    "", "https://youtu.be/CPNBTjto-Jc", 279, 345)
+                    "", "https://youtu.be/CPNBTjto-Jc", 279, 345),
+            new PlaylistItem(ItemType.Default, Format.Standard, "Credits", "",
+            "", "https://youtu.be/PppjDo0kLg8", 2788, 2830),
 
         }
     };
