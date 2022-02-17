@@ -13,9 +13,10 @@ public class Playlist
         Link = "https://www.academiadesalsa.com/", LinkText = "Academia de Salsa",
         Items =
         {
-            
             new PlaylistItem(ItemType.Default, Format.Standard, "Intro", "",
                 "", "https://youtu.be/PppjDo0kLg8", 849, 875),
+            new PlaylistItem(ItemType.Default, Format.Standard, "Salsa Music Band", "",
+                "", "https://youtu.be/PppjDo0kLg8", 1445, 2500),
             new PlaylistItem(ItemType.Default, Format.Standard, "Basic Mambo", "",
                 "", "https://youtu.be/ue-P8DoJ29Q", 6, 13),
             new PlaylistItem(ItemType.Default, Format.Standard, "Basic Mambo Side to Side", "",
@@ -38,7 +39,7 @@ public class Playlist
                 "", "https://youtu.be/ue-P8DoJ29Q", 76, 87),
             new PlaylistItem(ItemType.Default, Format.Standard, "Sombrero con mambo", "",
                 "", "https://youtu.be/ue-P8DoJ29Q", 87, 101),
-            new PlaylistItem(ItemType.Default, Format.Standard, "Ocho", "Eigth",
+            new PlaylistItem(ItemType.Default, Format.Standard, "Ocho", "Eight",
                 "", "https://youtu.be/ue-P8DoJ29Q", 101, 117),
             new PlaylistItem(ItemType.Default, Format.Standard, "Vacilala", "",
                 "", "https://youtu.be/ue-P8DoJ29Q", 117, 133),

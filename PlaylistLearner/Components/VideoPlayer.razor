@@ -36,7 +36,7 @@
                     @if (Video.Muted)
                     {<i @onclick="Video.Unmute" class="bi bi-volume-mute"></i>}
                     else
-                    {<i @onclick="Video.Unmute" class="bi bi-volume-down"></i>}
+                    {<i @onclick="Video.Mute" class="bi bi-volume-up"></i>}
                     @if (Item.Type.Equals(ItemType.HyperLink))
                     {<span>&thinsp;</span><a href="@Item.Link.Trim()" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>}
                     <span>&thinsp;</span><i @onclick="Close" class="bi bi-x-circle"></i>
