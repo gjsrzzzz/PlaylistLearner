@@ -1,5 +1,5 @@
 ﻿
-using VideoUtil.Util;
+using Jalindi.VideoUtil.Util;
 
 namespace PlaylistLearner.Model;
 
@@ -12,7 +12,7 @@ public enum ItemType
 public record PlaylistItem(ItemType Type, AspectRatio AspectRatio, string Name, string AltName, string Description, string Link,
     int Start = -1, int End = -1)
 {
-    public string PaddingPercent => $"{AspectRatio.Ratio()}%";
+    public string PaddingPercent => $"{AspectRatio.Ratio()*100}%";
 
     public string VideoId
     {

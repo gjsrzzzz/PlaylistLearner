@@ -1,4 +1,4 @@
-﻿namespace VideoUtil.Model;
+﻿namespace Jalindi.VideoUtil.Model;
 
 public class PlaylistYouTubeOptions
 {

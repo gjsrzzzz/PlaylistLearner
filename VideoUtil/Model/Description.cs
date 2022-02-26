@@ -1,12 +1,12 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace VideoUtil.Model;
+namespace Jalindi.VideoUtil.Model;
 
 public class Description
 {
-    public string FullDescription { get; }
-    public string Remaining { get; }
+    public string FullDescription { get;set; }
+    public string Remaining { get; set; }
     public string Brief(int maxLength)
     {
         return (FullDescription.Length > maxLength
@@ -14,13 +14,13 @@ public class Description
             : FullDescription);
     }
 
-    public List<TimeCode> TimeCodes { get; } = new();
+    public List<TimeCode> TimeCodes { get; set;} = new();
 
-    public List<KeyValuePair<string, string>> Tags { get; } = new();
+    public List<KeyValuePair<string, string>> Tags { get; set;} = new();
 
     public static readonly Description Empty = new();
 
-    private Description()
+    public Description()
     {
         FullDescription = string.Empty;
     }

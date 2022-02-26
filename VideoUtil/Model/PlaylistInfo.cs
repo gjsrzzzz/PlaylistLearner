@@ -1,4 +1,4 @@
-﻿namespace VideoUtil.Model;
+﻿namespace Jalindi.VideoUtil.Model;
 
 public class PlaylistInfo
 {
@@ -9,6 +9,7 @@ public class PlaylistInfo
     public Description Description { get; init; } = Description.Empty;
     public int VideoCount { get; init; }
     public List<string> VideoIdList { get; init; }
+    public List<VideoInfo> VideoInfoList { get; init; }
     public override string ToString()
     {
         return $"{Id}: {Title}";

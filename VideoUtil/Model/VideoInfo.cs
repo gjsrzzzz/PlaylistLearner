@@ -1,6 +1,6 @@
-﻿using VideoUtil.Util;
+﻿using Jalindi.VideoUtil.Util;
 
-namespace VideoUtil.Model;
+namespace Jalindi.VideoUtil.Model;
 
 public class VideoInfo
 {

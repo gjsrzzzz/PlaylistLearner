@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Text;
 
-namespace VideoUtil.Model;
+namespace Jalindi.VideoUtil.Model;
 
 public static class EnumerableTools
 {

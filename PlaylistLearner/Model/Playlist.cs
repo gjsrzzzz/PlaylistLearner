@@ -1,4 +1,4 @@
-﻿using VideoUtil.Util;
+﻿using Jalindi.VideoUtil.Util;
 
 namespace PlaylistLearner.Model;
 

@@ -1,8 +1,8 @@
 ﻿using PlaylistLearner.Model;
 using System.Linq;
+using Jalindi.VideoUtil;
+using Jalindi.VideoUtil.Model;
 using Microsoft.Extensions.Options;
-using VideoUtil;
-using VideoUtil.Model;
 
 namespace PlaylistLearner;
 
@@ -34,9 +34,8 @@ public class PlaylistService
     }
     public async Task<Playlist> GetPlaylist(string playListId)
     {
-          var youtubeList = await videoProvider.GetPlaylistInfo(playListId);
-          var videos = await videoProvider.GetVideosInfo(youtubeList.VideoIdList);
-          var items = (from i in videos select new PlaylistItem(ItemType.Default,
+          var youtubeList = await videoProvider.GetPlaylistInfo(playListId, true);
+          var items = (from i in youtubeList.VideoInfoList select new PlaylistItem(ItemType.Default,
               i.AspectRatio, i.Title, i.GetAltName(), i.Description.Remaining, $"{i.Id}", -1, -1));
           var playList = new Playlist()
           {

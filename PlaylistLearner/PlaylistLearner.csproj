@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PlaylistApiClient\PlaylistApiClient.csproj" />
       <ProjectReference Include="..\VideoUtil\VideoUtil.csproj" />
       <ProjectReference Include="..\YouTubeSourceGen\YouTubeSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>

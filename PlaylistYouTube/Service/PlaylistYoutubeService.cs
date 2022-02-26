@@ -4,10 +4,10 @@ using Google.Apis.Services;
 using Google.Apis.Util;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Jalindi.VideoUtil;
+using Jalindi.VideoUtil.Model;
+using Jalindi.VideoUtil.Util;
 using Microsoft.Extensions.Options;
-using VideoUtil;
-using VideoUtil.Model;
-using VideoUtil.Util;
 
 namespace PlaylistYouTube.Service;
 
@@ -106,7 +106,7 @@ public class PlaylistYoutubeService : IVideoProvider
             };
     }
 
-    public async Task<PlaylistInfo> GetPlaylistInfo(string playListId)
+    public async Task<PlaylistInfo> GetPlaylistInfo(string playListId, bool includeVideoInfo = false)
     {
         var request =service.Playlists.List("contentDetails,id,snippet");
         request.Id = playListId;
@@ -123,9 +123,11 @@ public class PlaylistYoutubeService : IVideoProvider
             var videoList2 = GetVideoList(itemsTaskResult);
             videoList.AddRange(videoList2);
         }
-        return item==null || snippet == null|| contentDetails==null? new PlaylistInfo():
-            new PlaylistInfo
+
+        if (item == null || snippet == null || contentDetails == null) return new PlaylistInfo();
+        return new PlaylistInfo
             {Valid = true, Id=item.Id, VideoCount=(int)(contentDetails.ItemCount??0), VideoIdList = videoList,
+                VideoInfoList = includeVideoInfo?await GetVideosInfo(videoList): new List<VideoInfo>(),
                 Channel = snippet.ChannelTitle,  Description = new Description(snippet.Description, TimeSpan.Zero), Title = snippet.Title};
     }
 

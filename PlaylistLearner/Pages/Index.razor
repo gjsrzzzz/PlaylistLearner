@@ -3,37 +3,45 @@
 @inject IJSRuntime JsRuntime
 @inject PlaylistService PlaylistService
 
-<PageTitle>@Playlist.Name</PageTitle>
-
-<h1 style="font-size: 32pt">@Playlist.Name</h1>
-@if (!string.IsNullOrEmpty(Playlist.Link))
+@if (Playlist == null)
 {
-    <p><a target="_blank" href="@Playlist.Link">@Playlist.LinkText</a> </p>
+    <p>Loading Playlist ...</p>
 }
-<div class="p-0 m-0">
-    <CascadingValue Value="@ShowVideos">
-    <CascadingValue Value="@this">
-        @foreach (var item in Playlist.Items)
-        {
-            <ItemCard Item="@item"/>
-        }
-    </CascadingValue>
-    </CascadingValue>
-</div>
+else
+{
+    <PageTitle>@Playlist.Name</PageTitle>
+
+    <h1 style="font-size: 32pt">@Playlist.Name</h1>
+    @if (!string.IsNullOrEmpty(Playlist.Link))
+    {
+        <p><a target="_blank" href="@Playlist.Link">@Playlist.LinkText</a> </p>
+    }
+
+    <div class="p-0 m-0">
+        <CascadingValue Value="@ShowVideos">
+            <CascadingValue Value="@this">
+                @foreach (var item in Playlist.Items)
+                {
+                    <ItemCard Item="@item"/>
+                }
+            </CascadingValue>
+        </CascadingValue>
+    </div>
+}
 
 @code
 {
     private HashSet<string> ShowVideos { get; } = new();
     public int Height { get; set; }
     public int Width { get; set; }
-    public Playlist Playlist => Playlist.Academia2005;
+    public Playlist? Playlist { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var dimension = await JsRuntime.InvokeAsync<WindowDimension>("getDimensions");
         Height = dimension.Height;
         Width = dimension.Width;
-        var pl=PlaylistService.GetPlaylist();
+        Playlist=await PlaylistService.GetPlaylist();
         await base.OnInitializedAsync();
     }
 

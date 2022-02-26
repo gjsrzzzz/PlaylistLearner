@@ -1,4 +1,4 @@
-﻿namespace VideoUtil.Util;
+﻿namespace Jalindi.VideoUtil.Util;
 
 public enum AspectRatio
 {

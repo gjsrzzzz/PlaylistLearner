@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
+using Jalindi.VideoUtil;
+using Jalindi.VideoUtil.Model;
+using Jalindi.VideoUtil.Util;
 using PlaylistLearner;
 using PlaylistLearner.Playlists;
 using PlaylistYouTube.Service;
-using VideoUtil;
-using VideoUtil.Model;
-using VideoUtil.Util;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -62,7 +63,11 @@ public class TestYouTube
 
     private async Task AssessPlaylist(string playListId)
     {
-        var playlistInfo = await videoProvider.GetPlaylistInfo(playListId);
+        var playlistInfo = await videoProvider.GetPlaylistInfo(playListId, true);
+        var json = JsonSerializer.Serialize(playlistInfo);
+        var playlistInfo2 = JsonSerializer.Deserialize<PlaylistInfo>(json);
+        var json2 = JsonSerializer.Serialize(playlistInfo2);
+        Assert.Equal(json,json2);
         output.WriteLine(
             $"Playlist Title: {playlistInfo.Title}\nItems {playlistInfo.VideoIdList.Count}\n{playlistInfo.Description.Brief(50)}");
 //        var videosInfo = await youtube.GetVideosInfo(playlistInfo.VideoIdList);
