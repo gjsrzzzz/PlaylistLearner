@@ -17,9 +17,12 @@ public class PlaylistYoutubeService : IVideoProvider
     private string YouTubeApiKey => options.YouTubeApiKey;
     private readonly HttpClient client = new HttpClient();
     private readonly YouTubeService service;
+    private string[] defaultPlaylistIds;
     public PlaylistYoutubeService(IOptions<PlaylistYouTubeOptions> options)
     {
         this.options = options.Value;
+        defaultPlaylistIds = string.IsNullOrEmpty(this.options.PlaylistIds) ? Array.Empty<string>():
+            (from a in this.options.PlaylistIds.Split(',') select a.Trim()).ToArray();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", YouTubeApiKey);
         service = new YouTubeService(new BaseClientService.Initializer() { ApiKey = YouTubeApiKey });
     }
@@ -108,6 +111,10 @@ public class PlaylistYoutubeService : IVideoProvider
 
     public async Task<PlaylistInfo> GetPlaylistInfo(string playListId, bool includeVideoInfo = false)
     {
+        if (playListId.Equals("default", StringComparison.OrdinalIgnoreCase) && defaultPlaylistIds.Length == 1)
+        {
+            playListId = defaultPlaylistIds[0];
+        }
         var request =service.Playlists.List("contentDetails,id,snippet");
         request.Id = playListId;
         var itemsTaskRequest=GetPlaylistItems(playListId);
