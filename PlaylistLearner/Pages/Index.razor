@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using PlaylistLearner.Components
 @inject IJSRuntime JsRuntime
+@inject PlaylistService PlaylistService
 
 <PageTitle>@Playlist.Name</PageTitle>
 
@@ -32,6 +33,7 @@
         var dimension = await JsRuntime.InvokeAsync<WindowDimension>("getDimensions");
         Height = dimension.Height;
         Width = dimension.Width;
+        var pl=PlaylistService.GetPlaylist();
         await base.OnInitializedAsync();
     }
 

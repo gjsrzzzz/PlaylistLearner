@@ -4,9 +4,12 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>ea563cbb-b179-4c99-81b0-ae7e472d0f7f</UserSecretsId>
+        <PlaylistId>PLCuHcnCB_TDnW4g-8UolN82O5RL2MROUU</PlaylistId> <!-- Generates a package at build -->
     </PropertyGroup>
 
     <ItemGroup>
+        <CompilerVisibleProperty Include="PlaylistId" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.1" PrivateAssets="all" />
     </ItemGroup>
@@ -14,6 +17,11 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\VideoUtil\VideoUtil.csproj" />
+      <ProjectReference Include="..\YouTubeSourceGen\YouTubeSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

@@ -2,6 +2,16 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistLearner", "PlaylistLearner\PlaylistLearner.csproj", "{D5A51F4A-C77F-4A59-AECF-FF4744366A45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistTest", "PlaylistTest\PlaylistTest.csproj", "{D14CA1DE-A843-40FE-9EF3-E85B6138FB35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistYouTube", "PlaylistYouTube\PlaylistYouTube.csproj", "{248AC464-0E48-4FCD-AA9F-A2E11FFCAAB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubeSourceGen", "YouTubeSourceGen\YouTubeSourceGen.csproj", "{A066D000-CB5C-405F-902A-A9B078A3D1EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubeSourceGenTest", "YouTubeSourceGenTest\YouTubeSourceGenTest.csproj", "{B147B188-0EE5-4A6D-A17F-D04CBE929B91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoUtil", "VideoUtil\VideoUtil.csproj", "{A1422CAC-FF5A-4A3B-88FC-3F390CDA376C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +22,25 @@ Global
 		{D5A51F4A-C77F-4A59-AECF-FF4744366A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5A51F4A-C77F-4A59-AECF-FF4744366A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5A51F4A-C77F-4A59-AECF-FF4744366A45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D14CA1DE-A843-40FE-9EF3-E85B6138FB35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D14CA1DE-A843-40FE-9EF3-E85B6138FB35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D14CA1DE-A843-40FE-9EF3-E85B6138FB35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D14CA1DE-A843-40FE-9EF3-E85B6138FB35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{248AC464-0E48-4FCD-AA9F-A2E11FFCAAB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{248AC464-0E48-4FCD-AA9F-A2E11FFCAAB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{248AC464-0E48-4FCD-AA9F-A2E11FFCAAB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{248AC464-0E48-4FCD-AA9F-A2E11FFCAAB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A066D000-CB5C-405F-902A-A9B078A3D1EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A066D000-CB5C-405F-902A-A9B078A3D1EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A066D000-CB5C-405F-902A-A9B078A3D1EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A066D000-CB5C-405F-902A-A9B078A3D1EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B147B188-0EE5-4A6D-A17F-D04CBE929B91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B147B188-0EE5-4A6D-A17F-D04CBE929B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B147B188-0EE5-4A6D-A17F-D04CBE929B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B147B188-0EE5-4A6D-A17F-D04CBE929B91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1422CAC-FF5A-4A3B-88FC-3F390CDA376C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1422CAC-FF5A-4A3B-88FC-3F390CDA376C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1422CAC-FF5A-4A3B-88FC-3F390CDA376C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1422CAC-FF5A-4A3B-88FC-3F390CDA376C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
