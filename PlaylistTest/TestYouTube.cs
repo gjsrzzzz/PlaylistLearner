@@ -69,9 +69,17 @@ public class TestYouTube
         var json2 = JsonSerializer.Serialize(playlistInfo2);
         Assert.Equal(json,json2);
         output.WriteLine(
-            $"Playlist Title: {playlistInfo.Title}\nItems {playlistInfo.VideoIdList.Count}\n{playlistInfo.Description.Brief(50)}");
+            $"Playlist Title: {playlistInfo.Title}\nItems {playlistInfo.VideoIdList.Count}\n{playlistInfo.Description.BriefRemaining(50)}");
+        if (playlistInfo.Tags.Count > 0)
+        {
+            output.WriteLine(
+                $"Playlist Title: {playlistInfo.Tags.ToCommaDelimited()}");
+        }
 //        var videosInfo = await youtube.GetVideosInfo(playlistInfo.VideoIdList);
         var playlist = await playlistService.GetPlaylist(playListId);
+        output.WriteLine(
+            $"Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls} ");
+
     }
 
 

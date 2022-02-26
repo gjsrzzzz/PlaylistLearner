@@ -13,6 +13,12 @@ public class Description
             ? FullDescription.Substring(0, maxLength)
             : FullDescription);
     }
+    public string BriefRemaining(int maxLength)
+    {
+        return (Remaining.Length > maxLength
+            ? Remaining.Substring(0, maxLength)
+            : Remaining);
+    }
 
     public List<TimeCode> TimeCodes { get; set;} = new();
 
@@ -25,22 +31,32 @@ public class Description
         FullDescription = string.Empty;
     }
 
+    private static void Append(StringBuilder builder, string value)
+    {
+        if (builder.Length > 0) builder.AppendLine("");
+        builder.Append(value);
+    }
+    
     public Description(string description, TimeSpan duration)
     {
         FullDescription = description;
         TimeCode? lastTimeCode = null;
         var builder = new StringBuilder();
-        foreach (var line in description.Split('\n'))
+        var reader = new StringReader(description);
+        var line = reader.ReadLine();
+        while (!string.IsNullOrEmpty(line))
         {
             var match = Regex.Match(line, @"^\s:?(\d+)?:?(\d+)?:?(\d+).*$");
             if (!match.Success)
             {
                 ExtractTags(line, builder);
+                line = reader.ReadLine();
                 continue;
             }
 
             lastTimeCode = ExtractTimeCodes(duration, match, builder, line, lastTimeCode);
             if (lastTimeCode==null) ExtractTags(line, builder);
+            line = reader.ReadLine();
         }
 
         Remaining = builder.ToString();
@@ -56,7 +72,7 @@ public class Description
             Tags.Add(new KeyValuePair<string, string>(key, value));
             return;
         }
-        builder.AppendLine(line);
+        Append(builder, line);
     }
 
     private TimeCode? ExtractTimeCodes(TimeSpan duration, Match match, StringBuilder builder, string line,
@@ -77,7 +93,7 @@ public class Description
             };
             if (timeSpan.Equals(TimeSpan.Zero))
             {
-                builder.AppendLine(line);
+                Append(builder, line);
                 return lastTimeCode;
             }
 

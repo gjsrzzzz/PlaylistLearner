@@ -40,6 +40,9 @@ public class PlaylistService
           var playList = new Playlist()
           {
               Name = youtubeList.Title,
+              Description=youtubeList.Description.Remaining,
+              Silent = youtubeList.GetBooleanTag(nameof(Playlist.Silent)),
+              SpeedControls = youtubeList.GetBooleanTag(nameof(Playlist.SpeedControls)),
               Link = youtubeList.GetLink(),
               LinkText = youtubeList.GetLinkText(),
               Items=items.ToList()

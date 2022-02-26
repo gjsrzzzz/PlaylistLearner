@@ -5,7 +5,6 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>ea563cbb-b179-4c99-81b0-ae7e472d0f7f</UserSecretsId>
-        <PlaylistId>PLCuHcnCB_TDnW4g-8UolN82O5RL2MROUU</PlaylistId> <!-- Generates a package at build -->
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,7 +21,6 @@
     <ItemGroup>
       <ProjectReference Include="..\PlaylistApiClient\PlaylistApiClient.csproj" />
       <ProjectReference Include="..\VideoUtil\VideoUtil.csproj" />
-      <ProjectReference Include="..\YouTubeSourceGen\YouTubeSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

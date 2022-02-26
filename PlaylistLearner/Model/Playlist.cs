@@ -4,7 +4,11 @@ namespace PlaylistLearner.Model;
 
 public class Playlist
 {
+    public bool Silent { get; init; }
+    public bool SpeedControls { get; init; }
+    
     public string Name { get; init; }
+    public string Description { get; init; }
     public string? Link { get; init; }
     public string? LinkText { get; init; }
     public List<PlaylistItem> Items { get; init;} = new();

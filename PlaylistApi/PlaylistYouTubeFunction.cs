@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Google.Apis.YouTube.v3.Data;
 using Jalindi.VideoUtil;
+using Jalindi.VideoUtil.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -34,6 +35,19 @@ public class PlaylistYouTubeFunction
         var playlist = await videoProvider.GetPlaylistInfo(playlistId, includeVideoInfo);
         return new OkObjectResult(playlist);
 
+    }
+
+    [FunctionName("Manifest")]
+    public async Task<IActionResult> RunManifest(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "manifest.json")]
+        HttpRequest req,
+        ILogger log)
+    {
+        var playlist = await videoProvider.GetPlaylistInfo("default", false);
+        var manifest = new Manifest(playlist.Title, playlist.Title, "./",
+            "standalone", "#ffffff", "#03173d", false, 
+            new []{new Icon( "icon-512.png", "image/png", "512x512"), new Icon("icon-192.png", "image/png", "192x192")});
+        return new OkObjectResult(manifest);
     }
 
 }

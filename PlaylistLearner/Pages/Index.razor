@@ -2,6 +2,12 @@
 @using PlaylistLearner.Components
 @inject IJSRuntime JsRuntime
 @inject PlaylistService PlaylistService
+@inject HttpClient Http
+
+
+<HeadContent>
+        <link href="@(Http.BaseAddress)api/manifest.json" rel="manifest" />
+</HeadContent>
 
 @if (Playlist == null)
 {
@@ -12,6 +18,10 @@ else
     <PageTitle>@Playlist.Name</PageTitle>
 
     <h1 style="font-size: 32pt">@Playlist.Name</h1>
+    @if (!string.IsNullOrEmpty(Playlist.Description))
+    {
+        <p>@Playlist.Description</p>
+    }
     @if (!string.IsNullOrEmpty(Playlist.Link))
     {
         <p><a target="_blank" href="@Playlist.Link">@Playlist.LinkText</a> </p>

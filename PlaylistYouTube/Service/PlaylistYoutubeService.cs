@@ -133,9 +133,11 @@ public class PlaylistYoutubeService : IVideoProvider
 
         if (item == null || snippet == null || contentDetails == null) return new PlaylistInfo();
         return new PlaylistInfo
-            {Valid = true, Id=item.Id, VideoCount=(int)(contentDetails.ItemCount??0), VideoIdList = videoList,
-                VideoInfoList = includeVideoInfo?await GetVideosInfo(videoList): new List<VideoInfo>(),
-                Channel = snippet.ChannelTitle,  Description = new Description(snippet.Description, TimeSpan.Zero), Title = snippet.Title};
+            {Title = snippet.Title, Description = new Description(snippet.Description, TimeSpan.Zero),
+                Valid = true, Id=item.Id, Channel = snippet.ChannelTitle,
+                VideoCount=(int)(contentDetails.ItemCount??0), VideoIdList = videoList,
+                VideoInfoList = includeVideoInfo?await GetVideosInfo(videoList): new List<VideoInfo>()
+                };
     }
 
     private static IEnumerable<string> GetVideoList(PlaylistItemListResponse itemsTaskResult)

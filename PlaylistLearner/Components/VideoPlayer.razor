@@ -27,16 +27,26 @@
                     }<span>&thinsp;</span><i @onclick="Video.Back" class="bi bi-skip-forward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" class="bi bi-skip-backward-circle"></i>
                 </td>
 
-                <td class="justify-content-center">
-                    <button type="button" @onclick="Video.Slow" class="btn btn-outline-dark">S</button>
-                    <button type="button" @onclick="Video.Medium" class="btn btn-outline-dark">M</button>
-                    <button type="button" @onclick="Video.Normal" class="btn btn-outline-dark">N</button>
-                </td>
+                @if (Playlist.SpeedControls)
+                {
+                    <td class="justify-content-center">
+                        <button type="button" @onclick="Video.Slow" class="btn btn-outline-dark">S</button>
+                        <button type="button" @onclick="Video.Medium" class="btn btn-outline-dark">M</button>
+                        <button type="button" @onclick="Video.Normal" class="btn btn-outline-dark">N</button>
+                    </td>
+                }
                 <td class="justify-content-end">
-                    @if (Video.Muted)
-                    {<i @onclick="Video.Unmute" class="bi bi-volume-mute"></i>}
-                    else
-                    {<i @onclick="Video.Mute" class="bi bi-volume-up"></i>}
+                    @if (!Playlist.Silent)
+                    {
+                        @if (Video.Muted)
+                        {
+                            <i @onclick="Video.Unmute" class="bi bi-volume-mute"></i>
+                        }
+                        else
+                        {
+                            <i @onclick="Video.Mute" class="bi bi-volume-up"></i>
+                        }
+                    }
                     @if (Item.Type.Equals(ItemType.HyperLink))
                     {<span>&thinsp;</span><a href="@Item.Link.Trim()" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>}
                     <span>&thinsp;</span><i @onclick="Close" class="bi bi-x-circle"></i>
@@ -57,6 +67,8 @@
 @code {
     [Parameter]
     public PlaylistItem Item { get; set; }
+
+    public Playlist Playlist => Parent.Playlist;
 
     public bool HasEndAndIsEnded => Item.HasEnd && Video.Time > Item.End;
 
