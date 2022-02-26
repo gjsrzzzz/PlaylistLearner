@@ -112,6 +112,28 @@ public class Description
 
         return lastTimeCode;
     }
+    
+    public bool GetBooleanTag(string tagName)
+    {
+        return TryGetTag(tagName, out var tagValue) && tagValue.Equals("true", StringComparison.OrdinalIgnoreCase);
+    }
+    
+    public string? GetStringTag(string tagName)
+    {
+        if (TryGetTag(tagName, out var tagValue)) return tagValue;
+        return null;
+    }
+
+    private bool TryGetTag(string tagName, out string tagValue)
+    {
+        tagValue = string.Empty;
+        foreach (var pair in Tags.Where(pair => pair.Key.Equals(tagName, StringComparison.OrdinalIgnoreCase)))
+        {
+            tagValue = pair.Value.Trim();
+            return true;
+        }
+        return false;
+    }
 }
 
 public class TimeCode

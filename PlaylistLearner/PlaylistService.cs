@@ -41,8 +41,8 @@ public class PlaylistService
           {
               Name = youtubeList.Title,
               Description=youtubeList.Description.Remaining,
-              Silent = youtubeList.GetBooleanTag(nameof(Playlist.Silent)),
-              SpeedControls = youtubeList.GetBooleanTag(nameof(Playlist.SpeedControls)),
+              Silent = youtubeList.Description.GetBooleanTag(nameof(Playlist.Silent)),
+              SpeedControls = youtubeList.Description.GetBooleanTag(nameof(Playlist.SpeedControls)),
               Link = youtubeList.GetLink(),
               LinkText = youtubeList.GetLinkText(),
               Items=items.ToList()

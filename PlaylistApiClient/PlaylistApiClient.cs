@@ -18,7 +18,7 @@ public class PlaylistApiClient : IVideoProvider
         return playlistInfo;
     }
 
-    public Task<List<VideoInfo>> GetVideosInfo(List<string> videoIds)
+    public Task<List<VideoInfo>> GetVideosInfo(List<string> videoIds, string? sort)
     {
         throw new NotImplementedException();
     }

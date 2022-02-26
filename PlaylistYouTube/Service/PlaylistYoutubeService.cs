@@ -54,11 +54,12 @@ public class PlaylistYoutubeService : IVideoProvider
         return CreateVideoInfo(item);
     }
 
-    public async Task<List<VideoInfo>> GetVideosInfo(List<string> videoIds)
+    public async Task<List<VideoInfo>> GetVideosInfo(List<string> videoIds, string sort)
     {
         var videos = new List<VideoInfo>();
         int skip = 0;
         const int maxPerRequest=50;
+        bool sortEnd = sort?.Equals("end", StringComparison.OrdinalIgnoreCase) ?? false;
         while (skip < videoIds.Count)
         {
             var request =
@@ -70,7 +71,12 @@ public class PlaylistYoutubeService : IVideoProvider
             videos.AddRange(result.Items.Select(CreateVideoInfo));
             skip += result.Items.Count;
         }
-        videos.Sort((x,y)=>x.Index.CompareTo(y.Index));
+
+        if (sortEnd)
+        {
+            videos.Sort((x, y) => x.Index.CompareTo(y.Index));
+        }
+
         return videos;
     }
     
@@ -132,11 +138,12 @@ public class PlaylistYoutubeService : IVideoProvider
         }
 
         if (item == null || snippet == null || contentDetails == null) return new PlaylistInfo();
+        var description = new Description(snippet.Description, TimeSpan.Zero);
         return new PlaylistInfo
-            {Title = snippet.Title, Description = new Description(snippet.Description, TimeSpan.Zero),
+            {Title = snippet.Title, Description = description,
                 Valid = true, Id=item.Id, Channel = snippet.ChannelTitle,
                 VideoCount=(int)(contentDetails.ItemCount??0), VideoIdList = videoList,
-                VideoInfoList = includeVideoInfo?await GetVideosInfo(videoList): new List<VideoInfo>()
+                VideoInfoList = includeVideoInfo?await GetVideosInfo(videoList, description.GetStringTag("Sort")): new List<VideoInfo>()
                 };
     }
 
