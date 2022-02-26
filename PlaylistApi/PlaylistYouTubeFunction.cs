@@ -44,9 +44,12 @@ public class PlaylistYouTubeFunction
         ILogger log)
     {
         var playlist = await videoProvider.GetPlaylistInfo("default", false);
-        var manifest = new Manifest(playlist.Title, playlist.Title, "./",
+        var origin = req.Headers["Origin"].ToString();
+        origin = string.IsNullOrEmpty(origin) ? ".." : origin;
+        var origin2 = string.IsNullOrEmpty(origin) ? "../" : origin;
+        var manifest = new Manifest($"{playlist.Title} Playlist", playlist.Title,  origin2,
             "standalone", "#ffffff", "#03173d", false, 
-            new []{new Icon( "icon-512.png", "image/png", "512x512"), new Icon("icon-192.png", "image/png", "192x192")});
+            new []{new Icon( $"{origin}/icon-512.png", "image/png", "512x512"), new Icon($"{origin}/icon-192.png", "image/png", "192x192")});
         return new OkObjectResult(manifest);
     }
 
