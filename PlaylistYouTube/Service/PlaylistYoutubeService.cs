@@ -17,7 +17,7 @@ public class PlaylistYoutubeService : IVideoProvider
     private string YouTubeApiKey => options.YouTubeApiKey;
     private readonly HttpClient client = new HttpClient();
     private readonly YouTubeService service;
-    private string[] defaultPlaylistIds;
+    private readonly string[] defaultPlaylistIds;
     public PlaylistYoutubeService(IOptions<PlaylistYouTubeOptions> options)
     {
         this.options = options.Value;
