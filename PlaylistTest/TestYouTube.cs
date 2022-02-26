@@ -1,9 +1,12 @@
-﻿using System.Text.Json;
+﻿using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Jalindi.VideoUtil;
 using Jalindi.VideoUtil.Model;
 using Jalindi.VideoUtil.Util;
 using PlaylistLearner;
+using PlaylistLearner.Model;
 using PlaylistLearner.Playlists;
 using PlaylistYouTube.Service;
 using Xunit;
@@ -36,9 +39,16 @@ public class TestYouTube
     }
     
     [Fact]
-    public async void TestPlayList()
+    public async void TestAcademia2005()
     {
-        await AssessPlaylist("PLCuHcnCB_TDmXpp478UcjWkVDsUDNTjCh");
+        const string playListId = "PLCuHcnCB_TDmXpp478UcjWkVDsUDNTjCh";
+        var playlistInfo = await videoProvider.GetPlaylistInfo(playListId, true);
+        playlistInfo.VideoInfoList.Count.Should().Be(4);
+        playlistInfo.VideoInfoList.First().Description.TimeCodes.Should().HaveCountGreaterThan(5);
+        var timeCode = playlistInfo.VideoInfoList.First().Description.TimeCodes.First();
+        timeCode.Name.Should().NotBeEmpty();
+
+        var playlist = await AssessPlaylist(playListId);
     }
     
     [Fact]
@@ -61,7 +71,7 @@ public class TestYouTube
         output.WriteLine(result);
     }
 
-    private async Task AssessPlaylist(string playListId)
+    private async Task<Playlist> AssessPlaylist(string playListId)
     {
         var playlistInfo = await videoProvider.GetPlaylistInfo(playListId, true);
         var json = JsonSerializer.Serialize(playlistInfo);
@@ -79,7 +89,7 @@ public class TestYouTube
         var playlist = await playlistService.GetPlaylist(playListId);
         output.WriteLine(
             $"Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls} ");
-
+        return playlist;
     }
 
 

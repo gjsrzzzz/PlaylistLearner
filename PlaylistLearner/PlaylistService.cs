@@ -1,5 +1,6 @@
 ﻿using PlaylistLearner.Model;
 using System.Linq;
+using System.Net.Sockets;
 using Jalindi.VideoUtil;
 using Jalindi.VideoUtil.Model;
 using Microsoft.Extensions.Options;
@@ -35,8 +36,12 @@ public class PlaylistService
     public async Task<Playlist> GetPlaylist(string playListId)
     {
           var youtubeList = await videoProvider.GetPlaylistInfo(playListId, true);
-          var items = (from i in youtubeList.VideoInfoList select new PlaylistItem(ItemType.Default,
-              i.AspectRatio, i.Title, i.GetAltName(), i.Description.Remaining, $"{i.Id}", -1, -1));
+          var items = new List<PlaylistItem>();
+          foreach (var videoInfo in youtubeList.VideoInfoList)
+          {
+              Add(items, videoInfo);
+          }
+          
           var playList = new Playlist()
           {
               Name = youtubeList.Title,
@@ -45,9 +50,29 @@ public class PlaylistService
               SpeedControls = youtubeList.Description.GetBooleanTag(nameof(Playlist.SpeedControls)),
               Link = youtubeList.GetLink(),
               LinkText = youtubeList.GetLinkText(),
-              Items=items.ToList()
+              Items=items
           };
           return playList;
+    }
+
+    private void Add(ICollection<PlaylistItem> items, VideoInfo video)
+    {
+        if (video.Description.TimeCodes.Count > 0)
+        {
+            foreach (var timeCode in video.Description.TimeCodes)
+            {
+                var playlistItem = new PlaylistItem(ItemType.Default,
+                    video.AspectRatio, timeCode.Name, timeCode.Extra??string.Empty, video.Description.Remaining, $"{video.Id}", 
+                    timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds);
+                items.Add(playlistItem);
+            }
+        }
+        else
+        {
+            var playlistItem = new PlaylistItem(ItemType.Default,
+                video.AspectRatio, video.Title, video.GetAltName()??string.Empty, video.Description.Remaining, $"{video.Id}", -1, -1);
+            items.Add(playlistItem);
+        }
     }
 
     public async Task<Playlist>  GetPlaylist()

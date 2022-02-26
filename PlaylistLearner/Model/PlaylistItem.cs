@@ -10,7 +10,7 @@ public enum ItemType
 
 
 public record PlaylistItem(ItemType Type, AspectRatio AspectRatio, string Name, string AltName, string Description, string Link,
-    int Start = -1, int End = -1)
+    double Start = -1, double End = -1)
 {
     public string PaddingPercent => $"{AspectRatio.Ratio()*100}%";
 
@@ -35,5 +35,5 @@ public record PlaylistItem(ItemType Type, AspectRatio AspectRatio, string Name, 
     }
 
     public bool HasEnd => End > 0;
-    public int ExtendedEnd => HasEnd ? (End - Start) * 2 + Start : End;
+    public double ExtendedEnd => HasEnd ? (End - Start) * 2 + Start : End;
 }

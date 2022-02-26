@@ -46,10 +46,15 @@ public class Description
         var line = reader.ReadLine();
         while (!string.IsNullOrEmpty(line))
         {
-            var match = Regex.Match(line, @"^\s:?(\d+)?:?(\d+)?:?(\d+).*$");
+            var match = Regex.Match(line, @"^\s*:?(\d+)?:?(\d+)?:?(\d+)(.*)$");
             if (!match.Success)
             {
-                ExtractTags(line, builder);
+                if (lastTimeCode==null) ExtractTags(line, builder);
+                else
+                {
+                    int dash = line.IndexOf('-');
+                    lastTimeCode.Extra = dash > 0 ? line.Substring(dash+1).Trim() : string.Empty;
+                }
                 line = reader.ReadLine();
                 continue;
             }
@@ -141,7 +146,7 @@ public class TimeCode
     public TimeSpan Start { get; init; }
     public TimeSpan End { get; set; }
     public string Name { get; init; }
-    public string Extra { get; init; }
+    public string Extra { get; set; }
 
     public override string ToString()
     {
