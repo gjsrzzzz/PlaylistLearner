@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -59,9 +60,37 @@ public class TestYouTube
         CheckItem(playlist, "Abanico Complicado con Adorno", 50);
         CheckItem(playlist, "Bayamo con Echeverria", 51);
         CheckItem(playlist, "Credits", 100);
-        CheckItem(playlist, "Sacala", "Take it out", "Show follower off with right hand");
+        CheckItem(playlist, "Sacala", "Take her out", "Show follower off with right hand");
         CheckItem(playlist, "Ocho", "Eight");
         CheckItem(playlist, "Vacilala", "Tease her");
+        Compare(playlist, Playlist.Academia2005);
+    }
+
+    private void Compare(Playlist playlist, Playlist comparePlaylist)
+    {
+        playlist.Name.Should().Be(comparePlaylist.Name, playlist.Name);
+        playlist.Description.Should().Be(comparePlaylist.Description, playlist.Name);
+        playlist.Link.Should().Be(comparePlaylist.Link, playlist.Name);
+        playlist.LinkText.Should().Be(comparePlaylist.LinkText, playlist.Name);
+        int index = 0;
+        foreach (var playlistItem in playlist.Items)
+        {
+            output.WriteLine(
+                $"Item: {playlistItem.Name} {playlistItem.AltName} {playlistItem.Description}");
+            index.Should().BeLessThan(comparePlaylist.Items.Count);
+            var comparePlaylistItem = comparePlaylist.Items[index++];
+            CompareItem(playlistItem, comparePlaylistItem);
+        }
+    }
+
+    private void CompareItem(PlaylistItem playlistItem, PlaylistItem comparePlaylistItem)
+    {
+        playlistItem.Description.Should().Be(comparePlaylistItem.Description,playlistItem.Name);
+        playlistItem.Name.Should().Be(comparePlaylistItem.Name,playlistItem.Name);
+        playlistItem.Link.Should().Be(comparePlaylistItem.Link,playlistItem.Name);
+        playlistItem.AltName.Should().Be(comparePlaylistItem.AltName,playlistItem.Name);
+        playlistItem.Start.Should().Be(comparePlaylistItem.Start,playlistItem.Name);
+        playlistItem.End.Should().Be(comparePlaylistItem.End,playlistItem.Name);
     }
 
     private void CheckItem(Playlist playlist, string name, string altName, string? description=null)
@@ -69,8 +98,8 @@ public class TestYouTube
         var item = playlist.Items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         item.Should().NotBeNull();
         output.WriteLine(
-            $"Item: {item.Name} {item.AltName} {item.Description}");
-        item.AltName.Should().Be(altName);
+            $"Item: {item.Name}, {item.AltName}, {item.Description}");
+        item.AltName.Should().Be(altName, item.Name);
         if (!string.IsNullOrEmpty(description)) item.Description.Should().Be(description);
     }
     

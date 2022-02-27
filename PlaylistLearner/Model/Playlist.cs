@@ -19,41 +19,41 @@ public class Playlist
 
     public static Playlist Academia2005 = new Playlist()
     {
-        Name = "Academia de Salsa 2005",
+        Name = "Academia de Salsa 2005", Description = "",
         Link = "https://www.academiadesalsa.com/", LinkText = "Academia de Salsa",
         Items =
         {
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Intro", "","",
                 "", "https://youtu.be/PppjDo0kLg8", 849, 875),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Salsa Music Band", "","",
-                "", "https://youtu.be/PppjDo0kLg8", 1445, 2500),
+                "", "https://youtu.be/PppjDo0kLg8", 1445, 2504),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Mambo", "","",
                 "", "https://youtu.be/ue-P8DoJ29Q", 6, 13),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Mambo Side to Side", "","",
             "", "https://youtu.be/ue-P8DoJ29Q", 13, 21),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Open and Close", "","",
                 "", "https://youtu.be/ue-P8DoJ29Q", 21, 31),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Dile que no", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Dile que no", "","Cross body lead",
                 "", "https://youtu.be/ue-P8DoJ29Q", 31, 36),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Guapea", "","",
                 "", "https://youtu.be/ue-P8DoJ29Q", 36, 40),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Enchufe", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Enchufe", "","Plug in",
                 "", "https://youtu.be/ue-P8DoJ29Q", 40, 48),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Enchufe doble", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Enchufe doble", "","Plug in double",
                 "", "https://youtu.be/ue-P8DoJ29Q", 48, 62),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Enchufe por detras", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Enchufe por detras", "","Plug in from behind",
                 "", "https://youtu.be/ue-P8DoJ29Q", 62, 68),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Sacala", "","Take her out",
-                "", "https://youtu.be/ue-P8DoJ29Q", 68, 76),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Sombrero", "","",
+                "Show follower off with right hand", "https://youtu.be/ue-P8DoJ29Q", 68, 76),
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Sombrero", "","Hat",
                 "", "https://youtu.be/ue-P8DoJ29Q", 76, 87),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Sombrero con mambo", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Sombrero con mambo", "","Hat with mambo",
                 "", "https://youtu.be/ue-P8DoJ29Q", 87, 101),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Ocho", "","Eight",
                 "", "https://youtu.be/ue-P8DoJ29Q", 101, 117),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Vacilala", "","Tease her",
                 "", "https://youtu.be/ue-P8DoJ29Q", 117, 133),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Dedo", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Dedo", "","Finger",
                 "", "https://youtu.be/ue-P8DoJ29Q", 133, 137),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Up close and personal", "","",
                 "", "https://youtu.be/ue-P8DoJ29Q", 137, 150),
@@ -81,7 +81,7 @@ public class Playlist
 
     public static Playlist Salsa = new Playlist()
     {
-        Name = "Salsa",
+        Name = "Salsa", Description = "",
         Items =
         {
             new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Side together side", "","",

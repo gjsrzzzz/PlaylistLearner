@@ -55,10 +55,10 @@ public class PlaylistService
         {
             foreach (var timeCode in video.Description.TimeCodes)
             {
-                if (timeCode.Ignore) continue;
+                if (timeCode.Ignore || !string.IsNullOrEmpty(timeCode.Key)) continue;
                 var playlistItem = new PlaylistItem(ItemType.Default,
                     video.AspectRatio, timeCode.Name, timeCode.Key,
-                    timeCode.AltName??string.Empty, timeCode.Description??string.Empty, $"{video.Id}", 
+                    timeCode.AltName??string.Empty, timeCode.Description??string.Empty, $"https://youtu.be/{video.Id}", 
                     timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds, timeCode.Order);
                 items.Add(playlistItem);
             }
@@ -67,7 +67,7 @@ public class PlaylistService
         {
             var playlistItem = new PlaylistItem(ItemType.Default,
                 video.AspectRatio, video.Title, video.Description.GetStringTag("Key")??string.Empty,
-                video.Description.GetStringTag("Alt")??string.Empty, video.Description.Remaining, $"{video.Id}", -1, -1);
+                video.Description.GetStringTag("Alt")??string.Empty, video.Description.Remaining, $"https://youtu.be/{video.Id}", -1, -1);
             items.Add(playlistItem);
         }
     }

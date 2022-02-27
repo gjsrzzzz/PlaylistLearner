@@ -47,7 +47,7 @@ public class Description
         var line = reader.ReadLine();
         while (!string.IsNullOrEmpty(line))
         {
-            var match = Regex.Match(line, @"^\s*:?(\d+)?:?(\d+)?:?(\d+)(.*)$");
+            var match = Regex.Match(line, @"^\s*:?(\d+(?=[:\s]))?:?(\d+(?=[:\s]))?:?(\d+(?=[\s]))(.*)$");
             if (!match.Success)
             {
                 if (lastTimeCode==null) ExtractAndAddTags(line, builder);
@@ -89,6 +89,10 @@ public class Description
                 continue;
             }
 
+            if (line.Contains("Intro"))
+            {
+                int a = 1;
+            }
             lastTimeCode = ExtractTimeCode(duration, match, builder, line, lastTimeCode);
             if (lastTimeCode != null) //ExtractAndAddTags(line, builder);
           //  else
@@ -138,6 +142,8 @@ public class Description
                 true when match.Groups[2].Success && match.Groups[3].Success => new TimeSpan(
                     int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value),
                     int.Parse(match.Groups[3].Value)),
+                true when !match.Groups[2].Success && match.Groups[3].Success => new TimeSpan(
+                    0, int.Parse(match.Groups[1].Value),int.Parse(match.Groups[3].Value)),
                 true when match.Groups[2].Success => new TimeSpan(0, int.Parse(match.Groups[1].Value),
                     int.Parse(match.Groups[2].Value)),
                 true => new TimeSpan(0, 0, int.Parse(match.Groups[1].Value)),
