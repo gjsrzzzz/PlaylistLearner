@@ -25,6 +25,18 @@
                         else
                         {<i @onclick="Video.Play" class="bi bi-play-circle"></i>}
                     }<span>&thinsp;</span><i @onclick="Video.Back" class="bi bi-skip-forward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" class="bi bi-skip-backward-circle"></i>
+                    @if (!string.IsNullOrEmpty(Item.Lesson) && Playlist.KeyedItems.ContainsKey(Item.Lesson))
+                    {
+                        <span>&thinsp;</span>
+                        @if (ShowingLesson)
+                        {
+                            <button type="button" @onclick="HideLesson" class="btn btn-secondary">Summary</button>
+                        }
+                        else
+                        {
+                            <button type="button" @onclick="ShowLesson" class="btn btn-secondary">Lesson</button>
+                        }
+                    }
                 </td>
 
                 @if (Playlist.SpeedControls)
@@ -67,10 +79,12 @@
 @code {
     [Parameter]
     public PlaylistItem Item { get; set; }
+    public PlaylistItem CurrentItem { get; set; }
+    public bool ShowingLesson { get; set; }
 
     public Playlist Playlist => Parent.Playlist;
 
-    public bool HasEndAndIsEnded => Item.HasEnd && Video.Time > Item.End;
+    public bool HasEndAndIsEnded => CurrentItem.HasEnd && Video.Time > CurrentItem.End;
 
     [CascadingParameter]
     private HashSet<string> ShowVideos { get; set; }
@@ -82,22 +96,45 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            if (Item.Start >= 0 && Item.End > 0)
-            {
-                await Video.PrepareVideo(this, Item.PaddingPercent, Item.VideoId, Item.Start, Item.ExtendedEnd);
-            }
-            else
-            {
-                await Video.PrepareVideo(this, Item.PaddingPercent, Item.VideoId);
-            }
+            CurrentItem = Item;
+            Prepare();
         }
+    }
+
+    async Task Prepare()
+    {
+        if (CurrentItem.Start >= 0 && CurrentItem.End > 0)
+        {
+            await Video.PrepareVideo(this, CurrentItem.PaddingPercent, CurrentItem.VideoId, CurrentItem.Start, CurrentItem.ExtendedEnd);
+        }
+        else
+        {
+            await Video.PrepareVideo(this, CurrentItem.PaddingPercent, CurrentItem.VideoId);
+        }   
+    }
+
+    async Task ShowLesson()
+    {
+        if (Playlist.KeyedItems.TryGetValue(Item.Lesson, out var lessonItem))
+        {
+            ShowingLesson = true;
+            CurrentItem = lessonItem;
+            await Prepare();
+        }
+    }
+
+    async Task HideLesson()
+    {
+        ShowingLesson = false;
+        CurrentItem = Item;
+        await Prepare();
     }
 
     public async Task OnPlayerStateChange()
     {
-        if (Video.State == PlayerState.Ended && Item.HasEnd)
+        if (Video.State == PlayerState.Ended && CurrentItem.HasEnd)
         {
-            await Video.SeekTo(Item.Start);
+            await Video.SeekTo(CurrentItem.Start);
 //            await Video.Pause();
         }
         StateHasChanged();

@@ -18,9 +18,10 @@ public class PlaylistService
     {
           var youtubeList = await videoProvider.GetPlaylistInfo(playListId, true);
           var items = new List<PlaylistItem>();
+          var keyedItems = new Dictionary<string, PlaylistItem>();
           foreach (var videoInfo in youtubeList.VideoInfoList)
           {
-              Add(items, videoInfo);
+              Add(items,keyedItems, videoInfo);
           }
 
           var orderBy = youtubeList.Description.GetEnumTag(nameof(Playlist.OrderBy), OrderBy.Sequence);
@@ -36,7 +37,8 @@ public class PlaylistService
               OrderBy = orderBy,
               Link = linkInfo is { Length: > 1 }?linkInfo[1]:string.Empty,
               LinkText = linkInfo==null || linkInfo.Length==0?string.Empty: linkInfo[0],
-              Items=items
+              Items=items,
+              KeyedItems=keyedItems
           };
           return playList;
     }
@@ -49,18 +51,25 @@ public class PlaylistService
         }
     }
 
-    private void Add(ICollection<PlaylistItem> items, VideoInfo video)
+    private void Add(ICollection<PlaylistItem> items, IDictionary<string, PlaylistItem> keyedItems, VideoInfo video)
     {
         if (video.Description.TimeCodes.Count > 0)
         {
             foreach (var timeCode in video.Description.TimeCodes)
             {
-                if (timeCode.Ignore || !string.IsNullOrEmpty(timeCode.Key)) continue;
+                if (timeCode.Ignore) continue;
                 var playlistItem = new PlaylistItem(ItemType.Default,
                     video.AspectRatio, timeCode.Name, timeCode.Key,
                     timeCode.AltName??string.Empty, timeCode.Description??string.Empty, $"https://youtu.be/{video.Id}", 
-                    timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds, timeCode.Order);
-                items.Add(playlistItem);
+                    timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds, timeCode.Order, timeCode.Lesson);
+                if (string.IsNullOrEmpty(timeCode.Key))
+                {
+                    items.Add(playlistItem);
+                }
+                else
+                {
+                    keyedItems.Add(timeCode.Key, playlistItem);
+                }
             }
         }
         else

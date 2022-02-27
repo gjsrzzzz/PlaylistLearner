@@ -65,7 +65,7 @@ public class Description
                         }
                         if (key.Equals("Lesson", StringComparison.OrdinalIgnoreCase))
                         {
-                            lastTimeCode.Key = value+ " Lesson";
+                            lastTimeCode.Lesson = value;
                         }
                         if (key.Equals("Ignore", StringComparison.OrdinalIgnoreCase))
                         {
@@ -225,6 +225,7 @@ public class TimeCode
     public bool Ignore { get; set; }
     public string AltName { get; set; }
     public string Description { get; set; }
+    public string Lesson { get; set; }
 
     public override string ToString()
     {

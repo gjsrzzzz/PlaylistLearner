@@ -15,6 +15,7 @@ public class Playlist
     public string? Link { get; init; }
     public string? LinkText { get; init; }
     public List<PlaylistItem> Items { get; init;} = new();
+    public Dictionary<string, PlaylistItem> KeyedItems { get; init;} = new();
 
 
     public static Playlist Academia2005 = new Playlist()
