@@ -54,12 +54,11 @@ public class PlaylistYoutubeService : IVideoProvider
         return CreateVideoInfo(item);
     }
 
-    public async Task<List<VideoInfo>> GetVideosInfo(List<string> videoIds, string sort)
+    public async Task<List<VideoInfo>> GetVideosInfo(List<string> videoIds)
     {
         var videos = new List<VideoInfo>();
         int skip = 0;
         const int maxPerRequest=50;
-        bool sortEnd = sort?.Equals("end", StringComparison.OrdinalIgnoreCase) ?? false;
         while (skip < videoIds.Count)
         {
             var request =
@@ -72,11 +71,10 @@ public class PlaylistYoutubeService : IVideoProvider
             skip += result.Items.Count;
         }
 
-        if (sortEnd)
+  /*      if (orderBy == OrderBy.EndNumber)
         {
             videos.Sort((x, y) => x.Index.CompareTo(y.Index));
-        }
-
+        }*/
         return videos;
     }
     
@@ -143,7 +141,7 @@ public class PlaylistYoutubeService : IVideoProvider
             {Title = snippet.Title, Description = description,
                 Valid = true, Id=item.Id, Channel = snippet.ChannelTitle,
                 VideoCount=(int)(contentDetails.ItemCount??0), VideoIdList = videoList,
-                VideoInfoList = includeVideoInfo?await GetVideosInfo(videoList, description.GetStringTag("Sort")): new List<VideoInfo>()
+                VideoInfoList = includeVideoInfo?await GetVideosInfo(videoList): new List<VideoInfo>()
                 };
     }
 

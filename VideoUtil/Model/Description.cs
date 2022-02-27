@@ -42,6 +42,7 @@ public class Description
         FullDescription = description;
         TimeCode? lastTimeCode = null;
         var builder = new StringBuilder();
+        int order = 0;
         var reader = new StringReader(description);
         var line = reader.ReadLine();
         while (!string.IsNullOrEmpty(line))
@@ -49,41 +50,87 @@ public class Description
             var match = Regex.Match(line, @"^\s*:?(\d+)?:?(\d+)?:?(\d+)(.*)$");
             if (!match.Success)
             {
-                if (lastTimeCode==null) ExtractTags(line, builder);
+                if (lastTimeCode==null) ExtractAndAddTags(line, builder);
                 else
                 {
-                    int dash = line.IndexOf('-');
-                    lastTimeCode.Extra = dash > 0 ? line.Substring(dash+1).Trim() : string.Empty;
+                    if (TryExtractTag(line, out var key, out var value))
+                    {
+                        if (key.Equals("Alt", StringComparison.OrdinalIgnoreCase))
+                        {
+                            lastTimeCode.AltName = value;
+                        }
+                        if (key.Equals("Key", StringComparison.OrdinalIgnoreCase))
+                        {
+                            lastTimeCode.Key = value;
+                        }
+                        if (key.Equals("Lesson", StringComparison.OrdinalIgnoreCase))
+                        {
+                            lastTimeCode.Key = value+ " Lesson";
+                        }
+                        if (key.Equals("Ignore", StringComparison.OrdinalIgnoreCase))
+                        {
+                            lastTimeCode.Ignore = value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                        }
+                        if (key.Equals("Order", StringComparison.OrdinalIgnoreCase) &&
+                            int.TryParse(value, out var newOrder))
+                        {
+                            lastTimeCode.Order = newOrder;
+                            order = newOrder + 1;
+                        }
+                    }
+                    else
+                    {
+                        lastTimeCode.Description = line.Trim();
+                    }
+ //                   int dash = line.IndexOf('-');
+ //                   lastTimeCode.Extra = dash > 0 ? line.Substring(dash+1).Trim() : string.Empty;
                 }
                 line = reader.ReadLine();
                 continue;
             }
 
-            lastTimeCode = ExtractTimeCodes(duration, match, builder, line, lastTimeCode);
-            if (lastTimeCode==null) ExtractTags(line, builder);
+            lastTimeCode = ExtractTimeCode(duration, match, builder, line, lastTimeCode);
+            if (lastTimeCode != null) //ExtractAndAddTags(line, builder);
+          //  else
+            {
+                lastTimeCode.Order = order;
+                order++;
+            }
             line = reader.ReadLine();
         }
 
         Remaining = builder.ToString();
     }
 
-    private void ExtractTags(string line, StringBuilder builder)
+    private void ExtractAndAddTags(string line, StringBuilder builder)
     {
-        int colon = line.IndexOf(":", StringComparison.OrdinalIgnoreCase);
-        if (colon > 0)
+        if (TryExtractTag(line, out var key, out var value))
         {
-            var key = line.Substring(0,colon);
-            var value = line.Substring(colon + 1);
             Tags.Add(new KeyValuePair<string, string>(key, value));
             return;
         }
         Append(builder, line);
     }
 
-    private TimeCode? ExtractTimeCodes(TimeSpan duration, Match match, StringBuilder builder, string line,
-        TimeCode? lastTimeCode)
+    private bool TryExtractTag(string line, out string key, out string value)
+    {
+        int colon = line.IndexOf(":", StringComparison.OrdinalIgnoreCase);
+        if (colon > 0)
+        {
+            key = line.Substring(0, colon).Trim();
+            value = line.Substring(colon + 1).Trim();
+            return true;
+        }
+
+        key=string.Empty;
+        value = string.Empty;
+        return false;
+    }
+
+    private TimeCode? ExtractTimeCode(TimeSpan duration, Match match, StringBuilder builder, string line, TimeCode? lastTimeCode)
     {
         var text = match.Groups[4].Value.Trim();
+        TimeCode? timeCode = null;
         try
         {
             var timeSpan = match.Groups[1].Success switch
@@ -94,12 +141,12 @@ public class Description
                 true when match.Groups[2].Success => new TimeSpan(0, int.Parse(match.Groups[1].Value),
                     int.Parse(match.Groups[2].Value)),
                 true => new TimeSpan(0, 0, int.Parse(match.Groups[1].Value)),
-                _ => TimeSpan.Zero
+                _ => TimeSpan.MaxValue
             };
-            if (timeSpan.Equals(TimeSpan.Zero))
+            if (timeSpan.Equals(TimeSpan.MaxValue))
             {
                 Append(builder, line);
-                return lastTimeCode;
+                return null;
             }
 
             if (lastTimeCode != null)
@@ -107,15 +154,15 @@ public class Description
                 lastTimeCode.End = timeSpan;
             }
 
-            if (text.Equals("End", StringComparison.OrdinalIgnoreCase)) return lastTimeCode;
-            lastTimeCode = new TimeCode { Start = timeSpan, End = duration, Name = text };
-            TimeCodes.Add(lastTimeCode);
+            if (text.Equals("End", StringComparison.OrdinalIgnoreCase)) return null;
+            timeCode = new TimeCode { Start = timeSpan, End = duration, Name = text };
+            TimeCodes.Add(timeCode);
         }
         catch (Exception e)
         {
         }
 
-        return lastTimeCode;
+        return timeCode;
     }
     
     public bool GetBooleanTag(string tagName)
@@ -128,25 +175,50 @@ public class Description
         if (TryGetTag(tagName, out var tagValue)) return tagValue;
         return null;
     }
+    
+    public string[]? GetStringsTag(string tagName)
+    {
+        return GetStringTag(tagName)?.Split('|');
+    }
+    
+    public TEnum GetEnumTag<TEnum>(string tagName, TEnum defaultValue)  where TEnum : struct
+    {
+        if (TryGetTag(tagName, out var tagValue))
+        {
+            tagValue = tagValue.Replace(" ", "");
+            if (Enum.TryParse<TEnum>(tagValue, out var tagEnum))
+            {
+                return tagEnum;
+            }
+        }
+        return defaultValue;
+    }
 
     private bool TryGetTag(string tagName, out string tagValue)
     {
+        tagName = tagName.Replace(" ", "");
         tagValue = string.Empty;
-        foreach (var pair in Tags.Where(pair => pair.Key.Equals(tagName, StringComparison.OrdinalIgnoreCase)))
+        foreach (var pair in Tags.Where(pair => pair.Key.Replace(" ", "").Equals(tagName, StringComparison.OrdinalIgnoreCase)))
         {
             tagValue = pair.Value.Trim();
             return true;
         }
         return false;
     }
+
+
 }
 
 public class TimeCode
 {
+    public int Order { get; set; } = 0;
     public TimeSpan Start { get; init; }
     public TimeSpan End { get; set; }
     public string Name { get; init; }
-    public string Extra { get; set; }
+    public string Key { get; set; }
+    public bool Ignore { get; set; }
+    public string AltName { get; set; }
+    public string Description { get; set; }
 
     public override string ToString()
     {

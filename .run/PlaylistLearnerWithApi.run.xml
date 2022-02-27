@@ -1,7 +1,7 @@
 ﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="PlaylistLearnerWithApi" type="CompoundRunConfigurationType">
-    <toRun name="PlaylistLearner" type="LaunchSettings" />
     <toRun name="PlaylistApi" type="AzureFunctionsHost" />
+    <toRun name="PlaylistLearner" type="LaunchSettings" />
     <method v="2" />
   </configuration>
 </component>

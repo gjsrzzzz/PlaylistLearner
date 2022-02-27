@@ -27,6 +27,10 @@ public class PlaylistYouTubeFunction
         if (!req.Query.TryGetValue("playlistId", out var playlistId)) return new UnauthorizedResult();
         if (playlistId.ToString().Equals("hello",StringComparison.OrdinalIgnoreCase))
             return new OkObjectResult(new Playlist() { Id = playlistId});
+        // Should be authenticated to get any playlist
+        if (!playlistId.ToString().Equals("default",StringComparison.OrdinalIgnoreCase))
+            return new UnauthorizedResult();
+
         var includeVideoInfo=false;
         if (req.Query.TryGetValue("includeVideoInfo", out var includeVideoInfoString))
         {

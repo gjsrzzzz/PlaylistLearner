@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -49,8 +50,39 @@ public class TestYouTube
         timeCode.Name.Should().NotBeEmpty();
 
         var playlist = await AssessPlaylist(playListId);
+        playlist.Link.Should().Be("https://www.academiadesalsa.com/");
+        playlist.LinkText.Should().Be("Academia de Salsa");
+        CheckItem(playlist, "Intro", 1);
+        CheckItem(playlist, "Salsa Music Band", 2);
+        CheckItem(playlist, "Basic Mambo", 10);
+        CheckItem(playlist, "Basic Mambo Side to Side", 11);
+        CheckItem(playlist, "Abanico Complicado con Adorno", 50);
+        CheckItem(playlist, "Bayamo con Echeverria", 51);
+        CheckItem(playlist, "Credits", 100);
+        CheckItem(playlist, "Sacala", "Take it out", "Show follower off with right hand");
+        CheckItem(playlist, "Ocho", "Eight");
+        CheckItem(playlist, "Vacilala", "Tease her");
+    }
+
+    private void CheckItem(Playlist playlist, string name, string altName, string? description=null)
+    {
+        var item = playlist.Items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        item.Should().NotBeNull();
+        output.WriteLine(
+            $"Item: {item.Name} {item.AltName} {item.Description}");
+        item.AltName.Should().Be(altName);
+        if (!string.IsNullOrEmpty(description)) item.Description.Should().Be(description);
     }
     
+    private void CheckItem(Playlist playlist, string name, int order)
+    {
+        var item = playlist.Items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        item.Should().NotBeNull();
+        output.WriteLine(
+            $"Item: {item.Name} {item.AltName} {item.Description}");
+        item.Order.Should().Be(order);
+    }
+
     [Fact]
     public async void TestEasyGerman()
     {
@@ -83,12 +115,12 @@ public class TestYouTube
         if (playlistInfo.Tags.Count > 0)
         {
             output.WriteLine(
-                $"Playlist Title: {playlistInfo.Tags.ToCommaDelimited()}");
+                $"Playlist Title: {playlistInfo.Tags.ToCommaDelimited()} ");
         }
 //        var videosInfo = await youtube.GetVideosInfo(playlistInfo.VideoIdList);
         var playlist = await playlistService.GetPlaylist(playListId);
         output.WriteLine(
-            $"Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls} ");
+            $"Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls}, Order: {playlist.OrderBy} ");
         return playlist;
     }
 

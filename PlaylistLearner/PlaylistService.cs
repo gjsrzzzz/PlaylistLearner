@@ -1,28 +1,9 @@
 ﻿using PlaylistLearner.Model;
-using System.Linq;
-using System.Net.Sockets;
 using Jalindi.VideoUtil;
 using Jalindi.VideoUtil.Model;
 using Microsoft.Extensions.Options;
 
 namespace PlaylistLearner;
-
-public static class PlaylistHelper
-{
-    public static string? GetLink(this PlaylistInfo playlist)
-    {
-        return string.Empty;
-    }
-    public static string? GetLinkText(this PlaylistInfo playlist)
-    {
-        return string.Empty;
-    }
-    public static string? GetAltName(this VideoInfo playlist)
-    {
-        return string.Empty;
-    }
-}
-
 
 public class PlaylistService
 {
@@ -41,18 +22,31 @@ public class PlaylistService
           {
               Add(items, videoInfo);
           }
-          
+
+          var orderBy = youtubeList.Description.GetEnumTag(nameof(Playlist.OrderBy), OrderBy.Sequence);
+          Sort(items, orderBy);
+
+          var linkInfo = youtubeList.Description.GetStringsTag(nameof(Playlist.Link));
           var playList = new Playlist()
           {
               Name = youtubeList.Title,
               Description=youtubeList.Description.Remaining,
               Silent = youtubeList.Description.GetBooleanTag(nameof(Playlist.Silent)),
               SpeedControls = youtubeList.Description.GetBooleanTag(nameof(Playlist.SpeedControls)),
-              Link = youtubeList.GetLink(),
-              LinkText = youtubeList.GetLinkText(),
+              OrderBy = orderBy,
+              Link = linkInfo is { Length: > 1 }?linkInfo[1]:string.Empty,
+              LinkText = linkInfo==null || linkInfo.Length==0?string.Empty: linkInfo[0],
               Items=items
           };
           return playList;
+    }
+
+    private void Sort(List<PlaylistItem> items, OrderBy orderBy)
+    {
+        if (orderBy == OrderBy.OrderNumber)
+        {
+            items.Sort((x, y)=>x.Order.CompareTo(y.Order));
+        }
     }
 
     private void Add(ICollection<PlaylistItem> items, VideoInfo video)
@@ -61,16 +55,19 @@ public class PlaylistService
         {
             foreach (var timeCode in video.Description.TimeCodes)
             {
+                if (timeCode.Ignore) continue;
                 var playlistItem = new PlaylistItem(ItemType.Default,
-                    video.AspectRatio, timeCode.Name, timeCode.Extra??string.Empty, video.Description.Remaining, $"{video.Id}", 
-                    timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds);
+                    video.AspectRatio, timeCode.Name, timeCode.Key,
+                    timeCode.AltName??string.Empty, timeCode.Description??string.Empty, $"{video.Id}", 
+                    timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds, timeCode.Order);
                 items.Add(playlistItem);
             }
         }
         else
         {
             var playlistItem = new PlaylistItem(ItemType.Default,
-                video.AspectRatio, video.Title, video.GetAltName()??string.Empty, video.Description.Remaining, $"{video.Id}", -1, -1);
+                video.AspectRatio, video.Title, video.Description.GetStringTag("Key")??string.Empty,
+                video.Description.GetStringTag("Alt")??string.Empty, video.Description.Remaining, $"{video.Id}", -1, -1);
             items.Add(playlistItem);
         }
     }
