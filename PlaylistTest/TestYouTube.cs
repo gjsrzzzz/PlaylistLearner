@@ -77,10 +77,12 @@ public class TestYouTube
         {
             output.WriteLine(
                 $"Item: {playlistItem.Name} {playlistItem.AltName} {playlistItem.Description}");
-            index.Should().BeLessThan(comparePlaylist.Items.Count);
+            index.Should().BeLessThan(comparePlaylist.Items.Count,$"{playlistItem.Name} {playlistItem.Link} {playlistItem.Start}");
             var comparePlaylistItem = comparePlaylist.Items[index++];
             CompareItem(playlistItem, comparePlaylistItem);
         }
+
+        index.Should().Be(comparePlaylist.Items.Count);
     }
 
     private void CompareItem(PlaylistItem playlistItem, PlaylistItem comparePlaylistItem)

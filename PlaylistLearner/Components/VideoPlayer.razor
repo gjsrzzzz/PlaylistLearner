@@ -24,17 +24,17 @@
                         {<i @onclick="Video.RePlay" class="bi bi-arrow-counterclockwise"></i>}
                         else
                         {<i @onclick="Video.Play" class="bi bi-play-circle"></i>}
-                    }<span>&thinsp;</span><i @onclick="Video.Back" class="bi bi-skip-forward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" class="bi bi-skip-backward-circle"></i>
+                    }<span>&thinsp;</span><i @onclick="Video.Back" class="bi bi-skip-backward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" class="bi bi-skip-forward-circle"></i>
                     @if (!string.IsNullOrEmpty(Item.Lesson) && Playlist.KeyedItems.ContainsKey(Item.Lesson))
                     {
                         <span>&thinsp;</span>
                         @if (ShowingLesson)
                         {
-                            <button type="button" @onclick="HideLesson" class="btn btn-secondary">Summary</button>
+                            <i @onclick="HideLesson" class="bi bi-arrow-left-circle"></i>
                         }
                         else
                         {
-                            <button type="button" @onclick="ShowLesson" class="btn btn-secondary">Lesson</button>
+                            <i @onclick="ShowLesson" class="bi bi-mortarboard"></i>
                         }
                     }
                 </td>
@@ -90,13 +90,18 @@
     private HashSet<string> ShowVideos { get; set; }
     [CascadingParameter]
     public PlaylistLearner.Pages.Index Parent { get; set; }
-    
+
+    protected override void OnParametersSet()
+    {
+        CurrentItem = Item;
+        base.OnParametersSet();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            CurrentItem = Item;
             Prepare();
         }
     }

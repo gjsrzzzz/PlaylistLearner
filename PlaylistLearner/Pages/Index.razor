@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using PlaylistLearner.Components
+@using Jalindi.VideoUtil.Model
 @inject IJSRuntime JsRuntime
 @inject PlaylistService PlaylistService
 @inject HttpClient Http
@@ -9,14 +10,16 @@
         <link href="@(Http.BaseAddress)api/manifest.json" rel="manifest" />
 </HeadContent>
 
+@if (Manifest != null)
+{
+    <PageTitle>@Manifest.short_name</PageTitle>
+}
 @if (Playlist == null)
 {
     <p>Loading Playlist ...</p>
 }
 else
 {
-    <PageTitle>@Playlist.Name</PageTitle>
-
     <h1 style="font-size: 32pt">@Playlist.Name</h1>
     @if (!string.IsNullOrEmpty(Playlist.Description))
     {
@@ -45,9 +48,17 @@ else
     public int Height { get; set; }
     public int Width { get; set; }
     public Playlist? Playlist { get; set; }
+    public Manifest? Manifest { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        Manifest = await Http.GetFromJsonAsync<Manifest>("/api/manifest.json");
+#pragma warning disable CS4014
+        InvokeAsync(() =>
+#pragma warning restore CS4014
+        {
+            StateHasChanged();
+        });
         var dimension = await JsRuntime.InvokeAsync<WindowDimension>("getDimensions");
         Height = dimension.Height;
         Width = dimension.Width;

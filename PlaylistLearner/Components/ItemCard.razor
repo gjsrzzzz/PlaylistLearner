@@ -39,10 +39,18 @@
 
 
     </div>
+    <ErrorBoundary>
+        <ChildContent>
         @if (ShowVideos.Contains(Name))
         {
             <VideoPlayer Item="@Item" />
-        }
+        }  
+        </ChildContent>
+        <ErrorContent>
+            <p class="my-custom-class">Failed to load video</p>
+        </ErrorContent>
+    </ErrorBoundary>
+
     </div>
 @code {
     [Parameter]
