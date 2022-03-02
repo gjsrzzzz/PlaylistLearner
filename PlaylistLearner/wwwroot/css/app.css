@@ -12,6 +12,10 @@ a, .btn-link {
     color: #0071c1;
 }
 
+i, .key {
+    font-size: 2rem
+}
+
 .themed-grid-col {
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;

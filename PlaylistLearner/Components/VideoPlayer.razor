@@ -17,24 +17,24 @@
             {
                 <td class="justify-content-start">
                     @if (Video.State == PlayerState.Playing)
-                    {<i @onclick="Video.Pause" class="bi bi-pause-circle"></i>}
+                    {<i @onclick="Video.Pause" aria-label="Pause Video" class="bi bi-pause-circle"></i>}
                     else
                     {
                         @if (HasEndAndIsEnded)
-                        {<i @onclick="Video.RePlay" class="bi bi-arrow-counterclockwise"></i>}
+                        {<i @onclick="Video.RePlay" aria-label="Replay Video" class="bi bi-arrow-counterclockwise"></i>}
                         else
-                        {<i @onclick="Video.Play" class="bi bi-play-circle"></i>}
-                    }<span>&thinsp;</span><i @onclick="Video.Back" class="bi bi-skip-backward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" class="bi bi-skip-forward-circle"></i>
+                        {<i @onclick="Video.Play" aria-label="Play Video" class="bi bi-play-circle"></i>}
+                    }<span>&thinsp;</span><i @onclick="Video.Back" aria-label="Skip Back" class="bi bi-skip-backward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" aria-label="Skip Forward" class="bi bi-skip-forward-circle"></i>
                     @if (!string.IsNullOrEmpty(Item.Lesson) && Playlist.KeyedItems.ContainsKey(Item.Lesson))
                     {
                         <span>&thinsp;</span>
                         @if (ShowingLesson)
                         {
-                            <i @onclick="HideLesson" class="bi bi-arrow-left-circle"></i>
+                            <i @onclick="HideLesson" aria-label="Close Lesson" class="bi bi-arrow-left-circle"></i>
                         }
                         else
                         {
-                            <i @onclick="ShowLesson" class="bi bi-mortarboard"></i>
+                            <i @onclick="ShowLesson" aria-label="Play Lesson" class="bi bi-mortarboard"></i>
                         }
                     }
                 </td>
@@ -42,9 +42,9 @@
                 @if (Playlist.SpeedControls)
                 {
                     <td class="justify-content-center">
-                        <button type="button" @onclick="Video.Slow" class="btn btn-outline-dark">S</button>
-                        <button type="button" @onclick="Video.Medium" class="btn btn-outline-dark">M</button>
-                        <button type="button" @onclick="Video.Normal" class="btn btn-outline-dark">N</button>
+                        <button type="button" aria-label="Slow Speed" @onclick="Video.Slow" class="btn btn-outline-dark">S</button>
+                        <button type="button" aria-label="Medium Speed" @onclick="Video.Medium" class="btn btn-outline-dark">M</button>
+                        <button type="button" aria-label="Normal Speed" @onclick="Video.Normal" class="btn btn-outline-dark">N</button>
                     </td>
                 }
                 <td class="justify-content-end">
@@ -52,22 +52,22 @@
                     {
                         @if (Video.Muted)
                         {
-                            <i @onclick="Video.Unmute" class="bi bi-volume-mute"></i>
+                            <i @onclick="Video.Unmute" aria-label="Toggle Mute" class="bi bi-volume-mute"></i>
                         }
                         else
                         {
-                            <i @onclick="Video.Mute" class="bi bi-volume-up"></i>
+                            <i @onclick="Video.Mute" aria-label="Toggle Mute" class="bi bi-volume-up"></i>
                         }
                     }
                     @if (Item.Type.Equals(ItemType.HyperLink))
-                    {<span>&thinsp;</span><a href="@Item.Link.Trim()" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>}
-                    <span>&thinsp;</span><i @onclick="Close" class="bi bi-x-circle"></i>
+                    {<span>&thinsp;</span><a href="@Item.Link.Trim()" aria-label="Open in YouTube" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>}
+                    <span>&thinsp;</span><i @onclick="Close" aria-label="Close" class="bi bi-x-circle"></i>
                 </td>
             }
             else
             {
                 <td class="justify-content-end">
-                    <i @onclick="Close" class="bi bi-x-circle"></i>
+                    <i @onclick="Close" aria-label="Close" class="bi bi-x-circle"></i>
                 </td>
             }
         }

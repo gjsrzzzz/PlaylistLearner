@@ -27,8 +27,10 @@ public class Playlist
         {
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Intro", "","",
                 "", "https://youtu.be/PppjDo0kLg8", 849, 875),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Salsa Music Band", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Salsa Music Band 1", "","",
                 "", "https://youtu.be/PppjDo0kLg8", 1445, 2504),
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Salsa Music Band 2", "","",
+                "", "https://youtu.be/bdNjbrjBi4E", 0, 758),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Mambo", "","",
                 "", "https://youtu.be/ue-P8DoJ29Q", 6, 13),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Mambo Side to Side", "","",

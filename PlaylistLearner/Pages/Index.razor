@@ -32,9 +32,33 @@ else
     }
     @if (!string.IsNullOrEmpty(Playlist.Link))
     {
-        <p><a target="_blank" href="@Playlist.Link">@Playlist.LinkText</a> </p>
+        <p><a target="_blank" href="@Playlist.Link">@Playlist.LinkText</a>&nbsp; 
+            @if (!ShowAbout)
+          {
+              <a href="" @onclick="DoShowAbout" @onclick:preventDefault target="_blank">About</a>
+          }</p>
     }
-
+    else
+    {
+        @if (!ShowAbout)
+        {
+            <a href="" @onclick="DoShowAbout" @onclick:preventDefault target="_blank">About</a>
+        }
+    }
+    @if (ShowAbout)
+    {
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">About</h5>
+                        <button type="button" @onclick="CloseAbout" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <About></About>
+                    </div>
+                </div>
+            </div>
+    }
     <div class="p-0 m-0">
         <CascadingValue Value="@ShowVideos">
             <CascadingValue Value="@this">
@@ -54,6 +78,17 @@ else
     public int Width { get; set; }
     public Playlist? Playlist { get; set; }
     public Manifest? Manifest { get; set; }
+    public bool ShowAbout { get; set; }
+
+    void DoShowAbout()
+    {
+        ShowAbout = true;
+    }
+
+    void CloseAbout()
+    {
+        ShowAbout = false;
+    }
 
     protected override async Task OnInitializedAsync()
     {
