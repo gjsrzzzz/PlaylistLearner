@@ -7,7 +7,12 @@
 
 
 <HeadContent>
-        <link href="@(Http.BaseAddress)api/manifest.json" rel="manifest" />
+    <link href="@(Http.BaseAddress)api/manifest.json" rel="manifest" />
+    @if (Manifest != null)
+    {
+        <link rel="apple-touch-icon" sizes="512x512" href="@Manifest.IconDir/icon-512.png" />
+        <link rel="icon" type="image/x-icon" href="@Manifest.IconDir/favicon.ico">
+    }
 </HeadContent>
 
 @if (Manifest != null)

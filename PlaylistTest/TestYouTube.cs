@@ -151,7 +151,7 @@ public class TestYouTube
 //        var videosInfo = await youtube.GetVideosInfo(playlistInfo.VideoIdList);
         var playlist = await playlistService.GetPlaylist(playListId);
         output.WriteLine(
-            $"Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls}, Order: {playlist.OrderBy} ");
+            $"Key: {playlist.Key} Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls}, Order: {playlist.OrderBy} ");
         return playlist;
     }
 

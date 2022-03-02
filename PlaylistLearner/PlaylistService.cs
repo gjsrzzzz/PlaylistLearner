@@ -34,6 +34,7 @@ public class PlaylistService
               Description=youtubeList.Description.Remaining,
               Silent = youtubeList.Description.GetBooleanTag(nameof(Playlist.Silent)),
               SpeedControls = youtubeList.Description.GetBooleanTag(nameof(Playlist.SpeedControls)),
+              Key = youtubeList.Key??string.Empty,
               OrderBy = orderBy,
               Link = linkInfo is { Length: > 1 }?linkInfo[1]:string.Empty,
               LinkText = linkInfo==null || linkInfo.Length==0?string.Empty: linkInfo[0],
