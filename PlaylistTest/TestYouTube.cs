@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Jalindi.VideoUtil;
 using Jalindi.VideoUtil.Model;
 using Jalindi.VideoUtil.Util;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using PlaylistLearner;
 using PlaylistLearner.Model;
 using PlaylistLearner.Playlists;
-using PlaylistYouTube.Service;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -126,11 +127,11 @@ public class TestYouTube
         await AssessPlaylist("PLCuHcnCB_TDmzFQlytyyxSgcSLCejjxCK");
     }
     
+    
     [Fact]
     public async void Pass()
     {
-        output.WriteLine(
-            $"Pass: {"Dancer".GetHashCode()} ");;
+        output.WriteLine($"Pass: {PassUtil.Hash("Practl")}");
     }
     
     [Fact]
@@ -182,5 +183,20 @@ public class TestYouTube
             $"Video Title: {videoInfo.Title}\nSize: {videoInfo.Width} {videoInfo.Height} {videoInfo.AspectRatio.RatioText()} {videoInfo.AspectRatio.Ratio()} {videoInfo.ActualRatio}");
         output.WriteLine($"Duration: {videoInfo.Duration}");
         output.WriteLine($"Description\n{videoInfo.Description.Brief(50)}");
+    }
+    
+    public static class PassUtil
+    {
+        public static string Hash(string password)
+        {
+            // derive a 256-bit subkey (use HMACSHA256 with 100,000 iterations)
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: Encoding.ASCII.GetBytes("Salty"),
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 100000,
+                numBytesRequested: 256 / 8));
+            return hashed;
+        }
     }
 }

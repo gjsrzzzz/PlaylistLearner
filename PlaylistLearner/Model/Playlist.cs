@@ -10,6 +10,7 @@ public class Playlist
     public bool SpeedControls { get; init; }
     public OrderBy OrderBy { get; init; }
     public string? Pass { get; init; }
+    public string? PassHash { get; set; }
     public bool IsProtected => !string.IsNullOrEmpty(Pass);
     
     public string Name { get; init; }
@@ -185,3 +186,4 @@ public class Playlist
         }
     };
 }
+
