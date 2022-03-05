@@ -9,6 +9,8 @@ public class Playlist
     public bool Silent { get; init; }
     public bool SpeedControls { get; init; }
     public OrderBy OrderBy { get; init; }
+    public string? Pass { get; init; }
+    public bool IsProtected => !string.IsNullOrEmpty(Pass);
     
     public string Name { get; init; }
     public string Description { get; init; }

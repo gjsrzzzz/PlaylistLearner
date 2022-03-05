@@ -121,6 +121,19 @@ public class TestYouTube
     }
 
     [Fact]
+    public async void TestDanceSalsa()
+    {
+        await AssessPlaylist("PLCuHcnCB_TDmzFQlytyyxSgcSLCejjxCK");
+    }
+    
+    [Fact]
+    public async void Pass()
+    {
+        output.WriteLine(
+            $"Pass: {"Dancer".GetHashCode()} ");;
+    }
+    
+    [Fact]
     public async void TestGeorgePetzold()
     {
         const string playListId = "PLCuHcnCB_TDnW4g-8UolN82O5RL2MROUU";
@@ -151,7 +164,7 @@ public class TestYouTube
 //        var videosInfo = await youtube.GetVideosInfo(playlistInfo.VideoIdList);
         var playlist = await playlistService.GetPlaylist(playListId);
         output.WriteLine(
-            $"Key: {playlist.Key} Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls}, Order: {playlist.OrderBy} ");
+            $"Key: {playlist.Key} Silent: {playlist.Silent}, SpeedControls: {playlist.SpeedControls}, IsProtected: {playlist.IsProtected} Order: {playlist.OrderBy} ");
         return playlist;
     }
 

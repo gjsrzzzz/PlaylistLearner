@@ -7,7 +7,11 @@
 
 <table>
     <tr style="font-size: 2rem">
-        @if (!Video.Ready)
+        @if (IsProtected)
+        {
+            <td >Protected @Pass</td>
+        }
+        else if (!Video.Ready)
         {
             <td >Loading ...</td>
         }
@@ -85,6 +89,8 @@
     public Playlist Playlist => Parent.Playlist;
 
     public bool HasEndAndIsEnded => CurrentItem.HasEnd && Video.Time > CurrentItem.End;
+    bool IsProtected => Playlist.IsProtected;
+    string? Pass { get; set; } = null;
 
     [CascadingParameter]
     private HashSet<string> ShowVideos { get; set; }
@@ -102,12 +108,19 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            Prepare();
+            await Prepare();
         }
     }
 
     async Task Prepare()
     {
+        if (IsProtected)
+        {
+            Pass = await Video.GetPass();
+            StateHasChanged();
+            return;
+        }
+
         if (CurrentItem.Start >= 0 && CurrentItem.End > 0)
         {
             await Video.PrepareVideo(this, CurrentItem.PaddingPercent, CurrentItem.VideoId, CurrentItem.Start, CurrentItem.ExtendedEnd);

@@ -159,4 +159,11 @@ public class VideoControl
         }
         VideoPlayer?.OnPlayerStateChange();
     }
+
+    public async Task<string> GetPass()
+    {
+        var pass = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "pass");
+        await JsRuntime.InvokeVoidAsync("localStorage.setItem", "pass", "otherpass");
+        return pass;
+    }
 }
