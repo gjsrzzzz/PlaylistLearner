@@ -1,6 +1,7 @@
 ﻿using PlaylistLearner.Model;
 using Jalindi.VideoUtil;
 using Jalindi.VideoUtil.Model;
+using Jalindi.VideoUtil.Util;
 using Microsoft.Extensions.Options;
 
 namespace PlaylistLearner;
@@ -53,14 +54,23 @@ public class PlaylistService
         }
     }
 
-    private void Add(ICollection<PlaylistItem> items, IDictionary<string, PlaylistItem> keyedItems, VideoInfo video)
+    private static void Add(ICollection<PlaylistItem> items, IDictionary<string, PlaylistItem> keyedItems, VideoInfo video)
     {
         if (video.Description.TimeCodes.Count > 0)
         {
             foreach (var timeCode in video.Description.TimeCodes)
             {
                 if (timeCode.Ignore) continue;
-                var playlistItem = new PlaylistItem(ItemType.Default,
+                if (timeCode.Name.Equals("Sacala", StringComparison.InvariantCulture))
+                {
+                    int a = 1;
+                }
+                var playlistItem = timeCode.ItemOnly?
+                    new PlaylistItem(ItemType.Default,
+                        AspectRatio.SixteenNine, timeCode.Name, timeCode.Key,
+                        timeCode.AltName??string.Empty, timeCode.Description??string.Empty, timeCode.AltLink??string.Empty,
+                        timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds, timeCode.Order, timeCode.Lesson):
+                    new PlaylistItem(ItemType.Default,
                     video.AspectRatio, timeCode.Name, timeCode.Key,
                     timeCode.AltName??string.Empty, timeCode.Description??string.Empty, $"https://youtu.be/{video.Id}", 
                     timeCode.Start.TotalSeconds, timeCode.End.TotalSeconds, timeCode.Order, timeCode.Lesson);
@@ -78,7 +88,8 @@ public class PlaylistService
         {
             var playlistItem = new PlaylistItem(ItemType.Default,
                 video.AspectRatio, video.Title, video.Description.GetStringTag("Key")??string.Empty,
-                video.Description.GetStringTag("Alt")??string.Empty, video.Description.Remaining, $"https://youtu.be/{video.Id}", -1, -1);
+                video.Description.GetStringTag("Alt")??string.Empty, video.Description.Remaining, $"https://youtu.be/{video.Id}", 
+                -1, -1, video.Description.FirstOrder);
             items.Add(playlistItem);
         }
     }

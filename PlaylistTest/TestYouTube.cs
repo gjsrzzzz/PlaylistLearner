@@ -124,7 +124,12 @@ public class TestYouTube
     [Fact]
     public async void TestDanceSalsa()
     {
-        await AssessPlaylist("PLCuHcnCB_TDmzFQlytyyxSgcSLCejjxCK");
+        var playlist = await AssessPlaylist("PLCuHcnCB_TDmzFQlytyyxSgcSLCejjxCK");
+        foreach (var playlistItem in playlist.Items)
+        {
+            output.WriteLine(
+                $"Item: {playlistItem.Name}, Alt: {playlistItem.AltName}, Desc: {playlistItem.Description}, Link: {playlistItem.Link}, {playlistItem.Start}-{playlistItem.End}");
+        }
     }
     
     
