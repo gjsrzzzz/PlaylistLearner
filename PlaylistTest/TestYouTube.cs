@@ -54,12 +54,12 @@ public class TestYouTube
         var playlist = await AssessPlaylist(playListId);
         playlist.Link.Should().Be("https://www.academiadesalsa.com/");
         playlist.LinkText.Should().Be("Academia de Salsa");
-        CheckItem(playlist, "Intro", 1);
-        CheckItem(playlist, "Salsa Music Band", 2);
-        CheckItem(playlist, "Basic Mambo", 10);
-        CheckItem(playlist, "Basic Mambo Side to Side", 11);
-        CheckItem(playlist, "Abanico Complicado con Adorno", 50);
-        CheckItem(playlist, "Bayamo con Echeverria", 51);
+        CheckItem(playlist, "Intro Basics", 1);
+        CheckItem(playlist, "Salsa Music Band 1", 2);
+        CheckItem(playlist, "Basic Step", 10);
+        CheckItem(playlist, "Basic Step Side to Side", 11);
+        CheckItem(playlist, "Abanico Complicado con Adorno", 51);
+        CheckItem(playlist, "Bayamo con Echeverria", 52);
         CheckItem(playlist, "Credits", 100);
         CheckItem(playlist, "Sacala", "Take her out", "Show follower off with right hand");
         CheckItem(playlist, "Ocho", "Eight");
@@ -109,6 +109,7 @@ public class TestYouTube
     private void CheckItem(Playlist playlist, string name, int order)
     {
         var item = playlist.Items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (item == null) throw new NullReferenceException($"Could not find item {name} in playlist {playlist.Name}\nItems {string.Join(", ", playlist.Items.Select(item=>item.Name))}");
         item.Should().NotBeNull();
         output.WriteLine(
             $"Item: {item.Name} {item.AltName} {item.Description}");

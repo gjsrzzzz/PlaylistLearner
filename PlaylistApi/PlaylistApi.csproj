@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
         <UserSecretsId>e5b84c0a-e666-4fc4-a95b-f81dc029e1de</UserSecretsId>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.2" />
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">

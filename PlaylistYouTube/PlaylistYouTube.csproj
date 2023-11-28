@@ -4,12 +4,12 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>10</LangVersion>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Apis.YouTube.v3" Version="1.56.0.2449" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+      <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
 
     </ItemGroup>
 
