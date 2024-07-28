@@ -7,8 +7,8 @@ using Jalindi.VideoUtil.Model;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace PlaylistApi;
@@ -20,7 +20,7 @@ public class PlaylistYouTubeFunction
     {
         this.videoProvider = videoProvider;
     }
-    [FunctionName("Playlist")]
+    [Function("Playlist")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
         HttpRequest req,
@@ -43,7 +43,7 @@ public class PlaylistYouTubeFunction
 
     }
 
-    [FunctionName("Manifest")]
+    [Function("Manifest")]
     public async Task<IActionResult> RunManifest(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "manifest.json")]
         HttpRequest req,
@@ -60,7 +60,7 @@ public class PlaylistYouTubeFunction
         return new OkObjectResult(manifest);
     }
 
-    [FunctionName("Hash")]
+    [Function("Hash")]
     public async Task<IActionResult> RunHash(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
         HttpRequest req,

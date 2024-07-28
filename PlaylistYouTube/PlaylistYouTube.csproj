@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+      <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3421" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
 
     </ItemGroup>
 
