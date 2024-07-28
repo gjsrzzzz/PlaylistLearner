@@ -10,6 +10,7 @@ public class PlaylistService
 {
     private readonly PlaylistOptions options;
     private readonly IVideoProvider videoProvider;
+    public string PlaylistId => options.PlaylistId;
     public PlaylistService(IVideoProvider videoProvider, IOptions<PlaylistOptions> options)
     {
         this.videoProvider=videoProvider;
