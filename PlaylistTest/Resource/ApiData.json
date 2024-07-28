@@ -3,8 +3,6 @@
   "valid": true,
   "channel": "Playlist Learner",
   "title": "Manchester Latin Festival",
-  "key": "MLF",
-  "iconBase": "MLF/",
   "description": {
     "fullDescription": "Link: Manchester Latin Festival Facebook|https://www.facebook.com/manchesterlatinfestival/\nKey: MLF",
     "remaining": "",
@@ -22,16 +20,6 @@
       }
     ]
   },
-  "tags": [
-    {
-      "key": "Link",
-      "value": "Manchester Latin Festival Facebook|https://www.facebook.com/manchesterlatinfestival/"
-    },
-    {
-      "key": "Key",
-      "value": "MLF"
-    }
-  ],
   "videoCount": 30,
   "videoIdList": [
     "JTGCm2jgRBo",

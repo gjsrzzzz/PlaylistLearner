@@ -149,10 +149,10 @@ public class TestYouTube(ITestOutputHelper output, IVideoProvider videoProvider,
         Assert.Equal(json,json2);
         output.WriteLine(
             $"Playlist Title: {playlistInfo.Title}\nItems {playlistInfo.VideoIdList.Count}\n{playlistInfo.Description.BriefRemaining(50)}");
-        if (playlistInfo.Tags.Count > 0)
+        if (playlistInfo.GetTags().Count > 0)
         {
             output.WriteLine(
-                $"Playlist Title: {playlistInfo.Tags.ToCommaDelimited()} ");
+                $"Playlist Title: {playlistInfo.GetTags().ToCommaDelimited()} ");
         }
 //        var videosInfo = await youtube.GetVideosInfo(playlistInfo.VideoIdList);
         var playlist = await playlistService.GetPlaylist(playListId);

@@ -55,8 +55,8 @@ public class PlaylistYouTubeFunction
         var origin2 = string.IsNullOrEmpty(origin) ? "../" : origin;
         var manifest = new Manifest($"{playlist.Title} Playlist", playlist.Title,  origin2,
             "standalone", "#ffffff", "#03173d", false, 
-            new []{new Icon( $"{origin}/{playlist.IconBase}icon-512.png", "image/png", "512x512"), 
-                new Icon($"{origin}/{playlist.IconBase}icon-192.png", "image/png", "192x192")});
+            new []{new Icon( $"{origin}/{playlist.GetIconBase()}icon-512.png", "image/png", "512x512"), 
+                new Icon($"{origin}/{playlist.GetIconBase()}icon-192.png", "image/png", "192x192")});
         return new OkObjectResult(manifest);
     }
 

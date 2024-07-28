@@ -10,13 +10,25 @@ public class PlaylistInfo
     public bool Valid { get; set; } = false;
     public string Channel { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
-    [JsonIgnore]
-    public string? Key  => Description?.GetStringTag(nameof(Key));
-    [JsonIgnore]
-    public string IconBase => Key==null || string.IsNullOrEmpty(Key) ? string.Empty : $"{Key}/";
+    
+    public string? GetKey() {
+        return Description?.GetStringTag("Key");
+    }
+    
+    public string GetIconBase()
+    {
+        
+        return GetKey() == null || string.IsNullOrEmpty(GetKey()) ? string.Empty : $"{GetKey()}/";
+    }
+
     public Description Description { get; set; } = Description.Empty;
-    [JsonIgnore]
-    public List<KeyValuePair<string, string>> Tags => Description.Tags;
+
+    public List<KeyValuePair<string, string>> GetTags()
+
+    {
+        return Description.Tags;
+    }
+
     public int VideoCount { get; set; }
     public List<string> VideoIdList { get; set; }= [];
     public List<VideoInfo> VideoInfoList { get; set; } = [];
