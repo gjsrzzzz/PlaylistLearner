@@ -1,4 +1,8 @@
-﻿namespace Jalindi.VideoUtil.Model;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Jalindi.VideoUtil.Model;
+
 
 public class PlaylistInfo
 {
@@ -6,9 +10,12 @@ public class PlaylistInfo
     public bool Valid { get; set; } = false;
     public string Channel { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    [JsonIgnore]
     public string? Key  => Description?.GetStringTag(nameof(Key));
+    [JsonIgnore]
     public string IconBase => Key==null || string.IsNullOrEmpty(Key) ? string.Empty : $"{Key}/";
     public Description Description { get; set; } = Description.Empty;
+    [JsonIgnore]
     public List<KeyValuePair<string, string>> Tags => Description.Tags;
     public int VideoCount { get; set; }
     public List<string> VideoIdList { get; set; }= [];
