@@ -17,21 +17,8 @@ using Xunit.Abstractions;
 namespace PlaylistTest;
 
 
-public class TestYouTube
+public class TestYouTube(ITestOutputHelper output, IVideoProvider videoProvider, PlaylistService playlistService)
 {
-    private readonly IVideoProvider videoProvider;
-    private readonly PlaylistService playlistService;
-    
-    private readonly ITestOutputHelper output;
-
-    public TestYouTube(ITestOutputHelper output, IVideoProvider videoProvider, PlaylistService playlistService)
-    {
-        this.output = output;
-        this.videoProvider=videoProvider;
-        this.playlistService = playlistService;
-    }
-
-
     [Fact]
     public async void TestAccessToVideos()
     {

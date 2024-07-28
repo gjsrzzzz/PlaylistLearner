@@ -8,7 +8,7 @@
 
         <UserSecretsId>c9505cfe-06f6-4116-a9f3-3a290eebd62d</UserSecretsId>
 
-        <LangVersion>11</LangVersion>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -40,6 +40,11 @@
     <ItemGroup>
       <ProjectReference Include="..\PlaylistLearner\PlaylistLearner.csproj" />
       <ProjectReference Include="..\PlaylistYouTube\PlaylistYouTube.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resource\ApiData.json" />
+      <EmbeddedResource Include="Resource\ApiData.json" />
     </ItemGroup>
 
 </Project>
