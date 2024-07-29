@@ -26,11 +26,13 @@ public class TestAppData(ITestOutputHelper output)
     {
         var stream = GetType().Assembly.GetManifestResourceStream(AppDataResource);
         stream.Should().NotBeNull();
+        var myOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        var other = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true
+        };
         var playlistInfo =  JsonSerializer.Deserialize<PlaylistInfo>(stream,
-            new JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            myOptions);
         playlistInfo.Should().NotBeNull();
         playlistInfo.VideoInfoList.Should().NotBeNull();
         playlistInfo.VideoInfoList.Should().NotBeEmpty();

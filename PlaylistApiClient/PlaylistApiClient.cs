@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using Jalindi.VideoUtil;
 using Jalindi.VideoUtil.Model;
 
@@ -11,9 +12,18 @@ public class PlaylistApiClient : IVideoProvider
     {
         this.httpClient = httpClient;
     }
+    
+    private static readonly JsonSerializerOptions DefaultSerializerOptions = new(JsonSerializerDefaults.Web);
+
     public async Task<PlaylistInfo> GetPlaylistInfo(string playListId, bool includeVideoInfo = false)
     {
-        var playlistInfo = await httpClient.GetFromJsonAsync<PlaylistInfo>($"/api/Playlist?playlistId={playListId}&includeVideoInfo={includeVideoInfo}") ?? new PlaylistInfo();
+        var url = $"/api/Playlist?playlistId={playListId}&includeVideoInfo={includeVideoInfo}";
+        
+        var result = await httpClient.GetStringAsync(url);
+        await Console.Out.WriteLineAsync(result);
+        var playlistInfo = JsonSerializer.Deserialize<PlaylistInfo>(result, DefaultSerializerOptions) ?? new PlaylistInfo();
+
+//        var playlistInfo = await httpClient.GetFromJsonAsync<PlaylistInfo>(url) ?? new PlaylistInfo();
         return playlistInfo;
     }
 
