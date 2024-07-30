@@ -21,7 +21,7 @@
 }
 @if (Playlist == null)
 {
-    <p>Loading Playlist ...</p>
+    <p>@LoadingMessage</p>
 }
 else
 {
@@ -76,9 +76,10 @@ else
     private HashSet<string> ShowVideos { get; } = new();
     public int Height { get; set; }
     public int Width { get; set; }
-    public Playlist? Playlist { get; set; }
+    public Playlist? Playlist { get; set; } 
     public Manifest? Manifest { get; set; }
     public bool ShowAbout { get; set; }
+    private string LoadingMessage { get; set; }= "Loading Playlist ...";
 
     void DoShowAbout()
     {
@@ -102,7 +103,19 @@ else
         var dimension = await JsRuntime.InvokeAsync<WindowDimension>("getDimensions");
         Height = dimension.Height;
         Width = dimension.Width;
-        Playlist=await PlaylistService.GetPlaylist();
+        try
+        {
+            Playlist=await PlaylistService.GetPlaylist();
+            Playlist.PassHash = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "pass");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Console.WriteLine(e.StackTrace);
+            LoadingMessage = $"Failed to load {PlaylistService.PlaylistId} {e.Message}";
+        }
+
+
         await base.OnInitializedAsync();
     }
 

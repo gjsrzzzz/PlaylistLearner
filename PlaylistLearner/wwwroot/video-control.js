@@ -152,7 +152,7 @@ function pauseVideo()
 }
 function stopVideo()
 {
-    if (player!== undefined) {
+    if (player!== undefined && player.stopVideo !== undefined) {
         player.stopVideo();
     }
 }
