@@ -10,6 +10,7 @@ public class PlaylistService
 {
     private readonly PlaylistOptions options;
     private readonly IVideoProvider videoProvider;
+    public string PlaylistId => options.PlaylistId;
     public PlaylistService(IVideoProvider videoProvider, IOptions<PlaylistOptions> options)
     {
         this.videoProvider=videoProvider;
@@ -36,7 +37,7 @@ public class PlaylistService
               Silent = youtubeList.Description.GetBooleanTag(nameof(Playlist.Silent)),
               SpeedControls = youtubeList.Description.GetBooleanTag(nameof(Playlist.SpeedControls)),
               Pass = youtubeList.Description.GetStringTag(nameof(Playlist.Pass)),
-              Key = youtubeList.Key??string.Empty,
+              Key = youtubeList.GetKey()??string.Empty,
               OrderBy = orderBy,
               Link = linkInfo is { Length: > 1 }?linkInfo[1]:string.Empty,
               LinkText = linkInfo==null || linkInfo.Length==0?string.Empty: linkInfo[0],
