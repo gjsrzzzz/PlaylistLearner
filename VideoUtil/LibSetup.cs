@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text;
 
 // ReSharper disable once CheckNamespace
 namespace System.Runtime.CompilerServices
@@ -11,4 +12,6 @@ namespace System.Runtime.CompilerServices
     sealed class IsExternalInit
     {
     }
+    
+
 }
