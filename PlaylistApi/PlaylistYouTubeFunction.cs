@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.YouTube.v3.Data;
 using Jalindi.VideoUtil;
 using Jalindi.VideoUtil.Model;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace PlaylistApi;
@@ -18,7 +20,7 @@ public class PlaylistYouTubeFunction
     {
         this.videoProvider = videoProvider;
     }
-    [FunctionName("Playlist")]
+    [Function("Playlist")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
         HttpRequest req,
@@ -41,7 +43,7 @@ public class PlaylistYouTubeFunction
 
     }
 
-    [FunctionName("Manifest")]
+    [Function("Manifest")]
     public async Task<IActionResult> RunManifest(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "manifest.json")]
         HttpRequest req,
@@ -53,9 +55,31 @@ public class PlaylistYouTubeFunction
         var origin2 = string.IsNullOrEmpty(origin) ? "../" : origin;
         var manifest = new Manifest($"{playlist.Title} Playlist", playlist.Title,  origin2,
             "standalone", "#ffffff", "#03173d", false, 
-            new []{new Icon( $"{origin}/{playlist.IconBase}icon-512.png", "image/png", "512x512"), 
-                new Icon($"{origin}/{playlist.IconBase}icon-192.png", "image/png", "192x192")});
+            new []{new Icon( $"{origin}/{playlist.GetIconBase()}icon-512.png", "image/png", "512x512"), 
+                new Icon($"{origin}/{playlist.GetIconBase()}icon-192.png", "image/png", "192x192")});
         return new OkObjectResult(manifest);
     }
+
+    [Function("Hash")]
+    public async Task<IActionResult> RunHash(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
+        HttpRequest req,
+        ILogger log)
+    {
+        if (!req.Query.TryGetValue("password", out var password)) return new UnauthorizedResult();
+        if (!req.Query.TryGetValue("salty", out var salty)) return new UnauthorizedResult();
+        if (!req.Query.TryGetValue("id", out var id)) return new UnauthorizedResult();
+        if (!id.Equals("PlaylistLearner")) return new UnauthorizedResult();
+
+        // derive a 256-bit subkey (use HMACSHA256 with 100,000 iterations)
+        var hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            password: password,
+            salt: Encoding.ASCII.GetBytes(salty),
+            prf: KeyDerivationPrf.HMACSHA256,
+            iterationCount: 100000,
+            numBytesRequested: 256 / 8));
+        return new OkObjectResult(hashed);
+    }
+
 
 }

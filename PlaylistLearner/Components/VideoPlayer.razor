@@ -1,13 +1,20 @@
 ﻿@using System.Xml
 @using System.Text.Json
 @using System.ComponentModel
+@using System.Net
+@using System.Text.RegularExpressions
 
 @inject VideoControl Video
 @inject NavigationManager NavManager
+@inject HttpClient Http
 
 <table>
     <tr style="font-size: 2rem">
-        @if (!Video.Ready)
+        @if (IsProtected)
+        {
+            <td >Protected Video, please enter password <input type="password" autocomplete="one-time-code" @bind="InputPassword" @onkeyup="OnInputKeyDown"/><i @onclick="SubmitPassword" aria-label="Submit Password" class="bi bi-check2"></i></td>
+        }
+        else if (!Video.Ready)
         {
             <td >Loading ...</td>
         }
@@ -85,16 +92,53 @@
     public Playlist Playlist => Parent.Playlist;
 
     public bool HasEndAndIsEnded => CurrentItem.HasEnd && Video.Time > CurrentItem.End;
-
+    bool IsProtected => Playlist.IsProtected && !(Playlist.PassHash?.Equals(Playlist.Pass) ?? false);
+    private string? InputPassword { get; set; }
+    
     [CascadingParameter]
     private HashSet<string> ShowVideos { get; set; }
     [CascadingParameter]
     public PlaylistLearner.Pages.Index Parent { get; set; }
 
-    protected override void OnParametersSet()
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected async override Task OnParametersSetAsync()
     {
         CurrentItem = Item;
-        base.OnParametersSet();
+        StateHasChanged();
+        await base.OnParametersSetAsync();
+    }
+
+    async Task SubmitPassword()
+    {
+        if (InputPassword != null)
+        {
+            var cleaned = Regex.Replace(InputPassword, @"[^\w\.@-]", "",
+                RegexOptions.None, TimeSpan.FromSeconds(1.5));
+            if (cleaned.Equals(InputPassword))
+            {
+                var response = await Http.GetAsync($"/api/Hash?password={InputPassword}&salty=Salty&id=PlaylistLearner");
+                Playlist.PassHash = await response.Content.ReadAsStringAsync();
+                await Video.SetPass(Playlist.PassHash);
+                StateHasChanged();
+                if (!IsProtected)
+                {
+                    await Prepare();
+                }
+            }
+            InputPassword = string.Empty;
+        }
+    }
+
+    async Task OnInputKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SubmitPassword();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -102,12 +146,17 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            Prepare();
+            await Prepare();
         }
     }
 
     async Task Prepare()
     {
+        if (IsProtected)
+        {
+            return;
+        }
+
         if (CurrentItem.Start >= 0 && CurrentItem.End > 0)
         {
             await Video.PrepareVideo(this, CurrentItem.PaddingPercent, CurrentItem.VideoId, CurrentItem.Start, CurrentItem.ExtendedEnd);

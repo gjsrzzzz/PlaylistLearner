@@ -9,6 +9,9 @@ public class Playlist
     public bool Silent { get; init; }
     public bool SpeedControls { get; init; }
     public OrderBy OrderBy { get; init; }
+    public string? Pass { get; init; }
+    public string? PassHash { get; set; }
+    public bool IsProtected => !string.IsNullOrEmpty(Pass);
     
     public string Name { get; init; }
     public string Description { get; init; }
@@ -25,18 +28,22 @@ public class Playlist
         Link = "https://www.academiadesalsa.com/", LinkText = "Academia de Salsa",
         Items =
         {
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Intro", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Intro Basics", "","",
                 "", "https://youtu.be/PppjDo0kLg8", 849, 875),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Salsa Music Band 1", "","",
                 "", "https://youtu.be/PppjDo0kLg8", 1445, 2504),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Salsa Music Band 2", "","",
                 "", "https://youtu.be/bdNjbrjBi4E", 0, 758),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Mambo", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Step", "","",
                 "", "https://youtu.be/ue-P8DoJ29Q", 6, 13),
-            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Mambo Side to Side", "","",
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Step Side to Side", "","",
             "", "https://youtu.be/ue-P8DoJ29Q", 13, 21),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Open and Close", "","",
                 "", "https://youtu.be/ue-P8DoJ29Q", 21, 31),
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Basic Timing", "","",
+                "", "https://youtu.be/PppjDo0kLg8", 78, 148),
+            new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Couples Position", "","",
+                "", "https://youtu.be/PppjDo0kLg8", 148, 316),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Dile que no", "","Cross body lead",
                 "", "https://youtu.be/ue-P8DoJ29Q", 31, 36),
             new PlaylistItem(ItemType.Default, AspectRatio.FourThree, "Guapea", "","",
@@ -117,7 +124,6 @@ public class Playlist
             new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Exhíbela Zero", "","", "", ""),
             new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Enchúfela doble y quédate", "","",
                 "Enchúfela then stop the follower 456 and the Enchúfela", ""),
-            new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Enchúfela doble y quédate", "","", "Enchúfela, Enchúfela, Ronde", ""),
             new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Enchúfela el Alarde", "","", "",
                 "https://www.youtube.com/watch?v=krpmwN1nfXM"),
             new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Sombrero doble", "","",
@@ -129,7 +135,7 @@ public class Playlist
             new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Bayamo por abajo", "","Bayamo below",
                 "Single hand sombrero. 456 around the man. 123 left hand arm lock 456 come out. 123456 sombrero and hat. Dile que no.",
                 "https://www.youtube.com/watch?v=KO9y_5HyWKg"),
-            new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Montana", "","Eighty-four",
+            new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Montana", "","",
                 "Two hand no hat sombrero (123456). Anti clockwise 123 woman. 456 outside turn for man. Then sombrero y dile que no",
                 ""),
             new PlaylistItem(ItemType.Default, AspectRatio.SixteenNine, "Ochenta y quatro", "","Eighty-four",
@@ -183,3 +189,4 @@ public class Playlist
         }
     };
 }
+
