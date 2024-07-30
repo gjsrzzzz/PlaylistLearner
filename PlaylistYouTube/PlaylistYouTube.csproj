@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>11</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3421" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\VideoUtil\VideoUtil.csproj" />
+    </ItemGroup>
+
+</Project>

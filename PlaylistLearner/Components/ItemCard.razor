@@ -1,4 +1,4 @@
-﻿@inject IJSRuntime JsRuntime
+﻿@inject VideoControl Video
 
 <div class="card p-0 mb-2 ml-0" style="width: 100%;max-width: 40rem">
     <div class="card-body">
@@ -11,7 +11,7 @@
         else if (Link.Length > 0)
         {
             <h5 class="card-title"><a href="" @onclick="() => ShowVideo(Name)" @onclick:preventDefault  target="_blank">@Name</a>&nbsp;
-                @if (ShowVideos.Contains(Name))
+                @if (ShowVideos.Contains(Name) && false)
                 {
                     <a href="@Link.Trim()" @onclick="() => ShowVideo(Name)" target="_blank">Video</a>
                 }
@@ -32,17 +32,25 @@
         {
             <h6 class="card-subtitle mb-2 text-muted">@AltName</h6>
         }
-        @if (Description.Length > 0)
+        @if (Description?.Length > 0)
         {
             <h6 class="card-text">@Description</h6>
         }
 
 
     </div>
+    <ErrorBoundary>
+        <ChildContent>
         @if (ShowVideos.Contains(Name))
         {
             <VideoPlayer Item="@Item" />
-        }
+        }  
+        </ChildContent>
+        <ErrorContent>
+            <p class="my-custom-class">Failed to load video</p>
+        </ErrorContent>
+    </ErrorBoundary>
+
     </div>
 @code {
     [Parameter]
@@ -59,9 +67,9 @@
     [CascadingParameter]
     public PlaylistLearner.Pages.Index Parent { get; set; }
     
-    void ShowVideo(string name)
+    async Task ShowVideo(string name)
     {
-        JsRuntime.InvokeVoidAsync("closeVideo");
+        await Video.Close();
         ShowVideos.Clear();
         ShowVideos.Add(name);
         Parent.RefreshState();

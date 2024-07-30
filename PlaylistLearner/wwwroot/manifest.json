@@ -1,7 +1,7 @@
 {
   "name": "Playlist Learner",
   "short_name": "Playlist Learner",
-  "start_url": "./",
+  "start_url": "../",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#03173d",

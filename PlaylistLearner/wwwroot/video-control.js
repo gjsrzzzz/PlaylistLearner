@@ -5,28 +5,53 @@ tag.src = 'https://www.youtube.com/iframe_api';
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-var player;
-var videoPlayer;
-var playerX;
-var playerHolder;
-var muted=false;
-var isSlow=false;
-var lastMuted=true;
+let player;
+let videoPlayer;
+let playerX;
+let playerHolder;
+let muted=false;
+let isSlow=false;
+let lastMuted=false;
+let reportedTime=-1;
+let currentVideoId='ue-P8DoJ29Q';
+let playerReady=false;
 
-function poll( )
+window.onresize = alignVideo;
+
+async function poll( )
 {
-    if (!isSlow && player!==undefined && player.isMuted!==undefined && player.isMuted()!==undefined) {
+    if (player===undefined || player.isMuted===undefined)
+    {
+        setTimeout(poll, 200);
+        return;
+    }
+    if (!isSlow && player.isMuted()!==undefined) {
         muted = player.isMuted();
     }
     
     if (videoPlayer!==undefined) {
         if (lastMuted!==muted) {
-            console.log("Sending muted= "+muted);
-            videoPlayer.invokeMethodAsync('OnMuteChange', muted);
+//            console.log("Sending muted= "+muted);
+            await videoPlayer.invokeMethodAsync('OnMuteChange', muted);
             lastMuted=muted;
         }
+        var time= player.getCurrentTime();
+        if (time!==undefined && reportedTime!==time)
+        {
+//            console.log("Sending time= "+time);
+            await videoPlayer.invokeMethodAsync('OnTimeChange', time);
+            reportedTime=time;
+        }
     }
-    setTimeout(poll, 500);
+    setTimeout(poll, 200);
+}
+
+function videoControlReady(dotnetRef) {
+    videoPlayer=dotnetRef;
+    console.log("Video player control ready");
+    if (playerReady) {
+        videoPlayer.invokeMethodAsync('OnPlayerReady');
+    }
 }
 
 function onYouTubeIframeAPIReady() {
@@ -37,13 +62,14 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-iframe', {
         height: '100%',
         width: '100%',
-        videoId: 'pgd4jcPJHow',
+        videoId: currentVideoId,
         playerVars: {
             'playsinline': 1,
             'origin': window.location,
             'autoplay': 1,
             'controls':1,
             'modestbranding':1,
+            'rel':0
         },
         events: {
             'onReady': onPlayerReady,
@@ -56,44 +82,64 @@ function onYouTubeIframeAPIReady() {
     setTimeout(poll, 500);
 }
 
-function closeVideo() {
-
+async function closeVideo() {
+    await stopVideo();
+    playerHolder.style.display = "none";
 }
 
 function alignVideo()
 {
-    var iframeElement = document.getElementById('youtube-iframe-container');
-    if (iframeElement !== undefined) {
+    var videoAreaElement = document.getElementById('video-area');
+    if (videoAreaElement !== undefined && playerHolder !== undefined && playerHolder.style.display !== "none") {
         var playerXRect = playerX.getBoundingClientRect();
         console.log("player rect", playerXRect.width, playerXRect.height);
-        iframeElement.style.width=playerXRect.width+"px";
-        iframeElement.style.height=playerXRect.height+"px";
+        videoAreaElement.style.width=playerXRect.width+"px";
+        videoAreaElement.style.height=playerXRect.height+"px";
 
-        var rect = iframeElement.parentElement.getBoundingClientRect();
+        var rect = videoAreaElement.parentElement.getBoundingClientRect();
         console.log(rect.top, rect.right, rect.bottom, rect.left);
         var bodyRect = document.body.getBoundingClientRect();
         var offsetTop = rect.top - bodyRect.top;
         var offsetLeft = rect.left - bodyRect.left;
         console.log(bodyRect.top, bodyRect.right, bodyRect.bottom, bodyRect.left);
         playerHolder.style.top = offsetTop + "px";
+
+        videoAreaElement.parentElement.parentElement.scrollIntoView(true);
 //        playerHolder.style.left=offsetLeft+"px";
 //        playerHolder.style.width=rect2.width+"px";
-        playerHolder.style.display = null;
     }
 }
 
-function prepareVideo(dotnetRef, paddingBottom, videoId, startSeconds, endSeconds) {
-    videoPlayer=dotnetRef;
+function prepareVideo(paddingBottom, videoId, startSeconds, endSeconds) {
     playerX.style.paddingBottom=paddingBottom;
+    playerHolder.style.display = null;
     alignVideo();
-    loadVideoById(videoId, startSeconds, endSeconds);
+    if (false) //currentVideoId===videoId)
+    {
+        console.log("going to",startSeconds);
+        seekTo(startSeconds, true);
+        playVideo();
+    }
+    else {
+        loadVideoById(videoId, startSeconds, endSeconds);
+    }
 }
 
 function loadVideoById(videoId,
                        startSeconds, endSeconds)
 {
-    console.log("loading video "+JSON.stringify(player));
-    player.loadVideoById(videoId, startSeconds, endSeconds);
+    if (endSeconds>0)
+    {
+        console.log("loading video ",startSeconds, endSeconds);
+        player.loadVideoById({'videoId': videoId,
+            'startSeconds': startSeconds,
+            'endSeconds': endSeconds});
+    }
+    else {
+        console.log("loading video ",startSeconds);
+        player.loadVideoById(videoId, startSeconds);
+    }
+    currentVideoId=videoId;
 }
 
 function playVideo()
@@ -106,7 +152,9 @@ function pauseVideo()
 }
 function stopVideo()
 {
-    player.stopVideo();
+    if (player!== undefined && player.stopVideo !== undefined) {
+        player.stopVideo();
+    }
 }
 function muteVideo()
 {
@@ -159,14 +207,18 @@ function seekTo(seconds, allowSeekAhead)
     player.seekTo(seconds, allowSeekAhead);
 }
 
-function onPlayerReady(event) {
+async function onPlayerReady(event) {
     muteVideo();
+    player.setLoop(true);
     console.log("Player ready");
+    if (videoPlayer) {
+        await videoPlayer.invokeMethodAsync('OnPlayerReady');
+    }
+    playerReady=true;
 }
 
-function onPlayerStateChange(event) {
-    console.log("Player State Change "+event.data);
+async function onPlayerStateChange(event) {
     if (videoPlayer) {
-        videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
+        await videoPlayer.invokeMethodAsync('OnPlayerStateChange', event);
     }
 }

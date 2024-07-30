@@ -1,239 +1,218 @@
 ﻿@using System.Xml
 @using System.Text.Json
 @using System.ComponentModel
+@using System.Net
+@using System.Text.RegularExpressions
 
-@inject IJSRuntime JsRuntime
+@inject VideoControl Video
 @inject NavigationManager NavManager
+@inject HttpClient Http
 
-<div>
-    @if (!Ready)
-    {
-        <button type="button" class="btn btn-secondary">Loading ...</button>
-    }
-    else
-    {
-        if (HasStartedPlaying)
+<table>
+    <tr style="font-size: 2rem">
+        @if (IsProtected)
         {
-            if (State == PlayerState.Playing)
+            <td >Protected Video, please enter password <input type="password" autocomplete="one-time-code" @bind="InputPassword" @onkeyup="OnInputKeyDown"/><i @onclick="SubmitPassword" aria-label="Submit Password" class="bi bi-check2"></i></td>
+        }
+        else if (!Video.Ready)
+        {
+            <td >Loading ...</td>
+        }
+        else
+        {
+            @if (Video.HasStartedPlaying)
             {
-                <button type="button" @onclick="Pause" class="btn btn-primary">Pause</button>
+                <td class="justify-content-start">
+                    @if (Video.State == PlayerState.Playing)
+                    {<i @onclick="Video.Pause" aria-label="Pause Video" class="bi bi-pause-circle"></i>}
+                    else
+                    {
+                        @if (HasEndAndIsEnded)
+                        {<i @onclick="Video.RePlay" aria-label="Replay Video" class="bi bi-arrow-counterclockwise"></i>}
+                        else
+                        {<i @onclick="Video.Play" aria-label="Play Video" class="bi bi-play-circle"></i>}
+                    }<span>&thinsp;</span><i @onclick="Video.Back" aria-label="Skip Back" class="bi bi-skip-backward-circle"></i><span>&thinsp;</span><i @onclick="Video.Forward" aria-label="Skip Forward" class="bi bi-skip-forward-circle"></i>
+                    @if (!string.IsNullOrEmpty(Item.Lesson) && Playlist.KeyedItems.ContainsKey(Item.Lesson))
+                    {
+                        <span>&thinsp;</span>
+                        @if (ShowingLesson)
+                        {
+                            <i @onclick="HideLesson" aria-label="Close Lesson" class="bi bi-arrow-left-circle"></i>
+                        }
+                        else
+                        {
+                            <i @onclick="ShowLesson" aria-label="Play Lesson" class="bi bi-mortarboard"></i>
+                        }
+                    }
+                </td>
+
+                @if (Playlist.SpeedControls)
+                {
+                    <td class="justify-content-center">
+                        <button type="button" aria-label="Slow Speed" @onclick="Video.Slow" class="btn btn-outline-dark">S</button>
+                        <button type="button" aria-label="Medium Speed" @onclick="Video.Medium" class="btn btn-outline-dark">M</button>
+                        <button type="button" aria-label="Normal Speed" @onclick="Video.Normal" class="btn btn-outline-dark">N</button>
+                    </td>
+                }
+                <td class="justify-content-end">
+                    @if (!Playlist.Silent)
+                    {
+                        @if (Video.Muted)
+                        {
+                            <i @onclick="Video.Unmute" aria-label="Toggle Mute" class="bi bi-volume-mute"></i>
+                        }
+                        else
+                        {
+                            <i @onclick="Video.Mute" aria-label="Toggle Mute" class="bi bi-volume-up"></i>
+                        }
+                    }
+                    @if (Item.Type.Equals(ItemType.HyperLink))
+                    {<span>&thinsp;</span><a href="@Item.Link.Trim()" aria-label="Open in YouTube" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>}
+                    <span>&thinsp;</span><i @onclick="Close" aria-label="Close" class="bi bi-x-circle"></i>
+                </td>
             }
             else
             {
-                <button type="button" @onclick="Play" class="btn btn-primary">Play</button>
-            }
-            <button type="button" @onclick="Back" class="btn btn-primary">-10s</button>
-            <button type="button" @onclick="Forward" class="btn btn-primary">+10s</button>
-            <button type="button" @onclick="Slow" class="btn btn-primary">S</button>
-            <button type="button" @onclick="Medium" class="btn btn-primary">M</button>
-            <button type="button" @onclick="Normal" class="btn btn-primary">N</button>
-            @if (Muted)
-            {
-                <button type="button" @onclick="Unmute" class="btn btn-primary">Unmute</button>
-            }
-            else
-            {
-                <button type="button" @onclick="Mute" class="btn btn-primary">Mute</button>
+                <td class="justify-content-end">
+                    <i @onclick="Close" aria-label="Close" class="bi bi-x-circle"></i>
+                </td>
             }
         }
-        <button type="button" @onclick="Close" class="btn btn-primary">Close</button>
-        <span>@State</span>
-    }
-</div>
+    </tr>
+</table>
 <div>
-<div id="youtube-iframe-container" style="width: 50px; height:50px">
-    <!--iframe id="youtube-iframe" frameborder="0" style="width:100%;height:100%;position:absolute;left:0px;top:0px;" allow="autoplay;fullscreen;" 
-    src="@Embed(Item.Link)">
-    </iframe-->
+    <div id="video-area" style="width: 50px; height:50px"></div>
 </div>
-</div>
-
 @code {
     [Parameter]
     public PlaylistItem Item { get; set; }
+    public PlaylistItem CurrentItem { get; set; }
+    public bool ShowingLesson { get; set; }
 
-    public bool Ready { get; set; } = false;
-    public bool Muted { get; set; } = false;
-    public bool HasStartedPlaying { get; set; } = false;
-    public PlayerState State { get; set; } = PlayerState.Unstarted;
+    public Playlist Playlist => Parent.Playlist;
 
-    public enum PlayerState
-    {
-        Unstarted=-1,
-        Ended=0, Playing=1, Paused=2, Buffering=3, VideoCued=4
-    }
-       
+    public bool HasEndAndIsEnded => CurrentItem.HasEnd && Video.Time > CurrentItem.End;
+    bool IsProtected => Playlist.IsProtected && !(Playlist.PassHash?.Equals(Playlist.Pass) ?? false);
+    private string? InputPassword { get; set; }
+    
     [CascadingParameter]
     private HashSet<string> ShowVideos { get; set; }
     [CascadingParameter]
     public PlaylistLearner.Pages.Index Parent { get; set; }
-    
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        CurrentItem = Item;
+        StateHasChanged();
+        await base.OnParametersSetAsync();
+    }
+
+    async Task SubmitPassword()
+    {
+        if (InputPassword != null)
+        {
+            var cleaned = Regex.Replace(InputPassword, @"[^\w\.@-]", "",
+                RegexOptions.None, TimeSpan.FromSeconds(1.5));
+            if (cleaned.Equals(InputPassword))
+            {
+                var response = await Http.GetAsync($"/api/Hash?password={InputPassword}&salty=Salty&id=PlaylistLearner");
+                Playlist.PassHash = await response.Content.ReadAsStringAsync();
+                await Video.SetPass(Playlist.PassHash);
+                StateHasChanged();
+                if (!IsProtected)
+                {
+                    await Prepare();
+                }
+            }
+            InputPassword = string.Empty;
+        }
+    }
+
+    async Task OnInputKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SubmitPassword();
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            var dotNetObjectReference = DotNetObjectReference.Create(this);
-            await JsRuntime.InvokeVoidAsync("prepareVideo", dotNetObjectReference,GetPaddingPercent(), GetId(),"0");
+            await Prepare();
         }
     }
-    
-    string AspectStyle(Format format)
-    {
-        var style = format switch
-        {
-            Format.Default => "position:relative;padding-bottom:56.25%;",
-            Format.Mobile => "position:relative;padding-bottom:176.33%;",
-            _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
-            };
-        if (!Ready) style += ";display: none";
-        return style;
-    }
-    
-        
-    string GetPaddingPercent()
-    {
-        var style = Item.Format switch
-        {
-            Format.Default => "56.25%",
-            Format.Mobile => "176.33%",
-            _ => throw new ArgumentOutOfRangeException(nameof(Item.Format), Item.Format, null)
-            };
-        return style;
-    }
 
-    string GetId()
+    async Task Prepare()
     {
-        var link = Item.Link.Trim();
-        int index = link.IndexOf("?v=");
-        if (index > 0) link = link[(index + 3)..];
-        else
+        if (IsProtected)
         {
-            index = link.LastIndexOf("/");
-            if (index > 0)
-            {
-                link=link[(index + 1)..];
-            }
+            return;
         }
-        return link;
-    }
-    
-    string Embed(string link)
-    {
-        link = link.Trim();
-        link = link.Contains("watch") ? link.Replace("/watch?v=", "/embed/") : 
-            link.Replace("https://youtu.be/", "https://www.youtube.com/embed/");
-        link += "?autoplay=1&enablejsapi=1&controls=1&modestbranding=1&origin="+NavManager.Uri;
-        if (link.EndsWith("/")) link=link[..^1];
-        return link;
-    }
 
-    [JSInvokable] // This is required in order to JS be able to execute it
-    public void OnPlayerStateChange(JsonElement eventData)
-    {
-        var text = eventData.GetRawText();
-        var playerInfo=GetPlayerInfo(eventData);
-        if (eventData.GetProperty("data").TryGetInt32(out var data))
+        if (CurrentItem.Start >= 0 && CurrentItem.End > 0)
         {
-            State =(PlayerState)Enum.ToObject(typeof(PlayerState), data);
-            if (State != PlayerState.Unstarted)
-            {
-                Ready = true;
-            }
-            if (State == PlayerState.Playing)
-            {
-                HasStartedPlaying = true;
-            }
-            StateHasChanged();
+            await Video.PrepareVideo(this, CurrentItem.PaddingPercent, CurrentItem.VideoId, CurrentItem.Start, CurrentItem.ExtendedEnd);
         }
         else
         {
-            int a = 1;
+            await Video.PrepareVideo(this, CurrentItem.PaddingPercent, CurrentItem.VideoId);
+        }   
+    }
+
+    async Task ShowLesson()
+    {
+        if (Playlist.KeyedItems.TryGetValue(Item.Lesson, out var lessonItem))
+        {
+            ShowingLesson = true;
+            CurrentItem = lessonItem;
+            await Prepare();
         }
-
     }
 
-    private PlayerInfo? GetPlayerInfo(JsonElement eventData)
+    async Task HideLesson()
     {
-        var info= eventData.GetProperty("target").GetProperty("playerInfo").Deserialize<PlayerInfo>();
-        return info;
+        ShowingLesson = false;
+        CurrentItem = Item;
+        await Prepare();
     }
-    
-    [JSInvokable] // This is required in order to JS be able to execute it
-    public void OnMuteChange(bool muted)
+
+    public async Task OnPlayerStateChange()
     {
-        Muted = muted;  
+        if (Video.State == PlayerState.Ended && CurrentItem.HasEnd)
+        {
+            await Video.SeekTo(CurrentItem.Start);
+//            await Video.Pause();
+        }
         StateHasChanged();
     }
     
-    private void Play()
+    public async Task OnTimeChange()
     {
-        JsRuntime.InvokeVoidAsync("playVideo");
-    }
-
-    private void Pause()
-    {
-        JsRuntime.InvokeVoidAsync("pauseVideo");
-    }
-    
-    private void Back()
-    {
-        JsRuntime.InvokeVoidAsync("backVideo");
+        if (HasEndAndIsEnded)
+        {
+            await Video.Pause();
+        }
+        StateHasChanged();
     }
     
-    private void Forward()
+    private async Task Close()
     {
-        JsRuntime.InvokeVoidAsync("forwardVideo");
-    }
-    
-    private void Slow()
-    {
-        JsRuntime.InvokeVoidAsync("slowSpeed");
-    }
-    
-    private void Mute()
-    {
-        JsRuntime.InvokeVoidAsync("muteVideo");
-    }
-    
-    private void Unmute()
-    {
-        JsRuntime.InvokeVoidAsync("unMuteVideo");
-    }
-
-    
-    private void UnMute()
-    {
-        JsRuntime.InvokeVoidAsync("unMuteVideo");
-    }
-    
-    private void Medium()
-    {
-        JsRuntime.InvokeVoidAsync("mediumSpeed");
-    }
-    
-    private void Normal()
-    {
-        JsRuntime.InvokeVoidAsync("normalSpeed");
-    }
-    
-    private void Close()
-    {
+        await Video.Close();
         ShowVideos.Clear();
         Parent.RefreshState();
     }
 
-    public class VideoData 
+    public void Refresh()
     {
-        public string video_id { get; set; }
-        public string author { get; set; }
-        public string title { get; set; }
-        public string video_quality { get; set; }
+        StateHasChanged();
     }
-    
-    public class PlayerInfo 
-    {
-        public string videoUrl { get; set; }
-        public VideoData videoData { get; set; }
-    }
+
 }
