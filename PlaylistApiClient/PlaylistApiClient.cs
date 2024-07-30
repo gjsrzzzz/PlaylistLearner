@@ -19,11 +19,11 @@ public class PlaylistApiClient : IVideoProvider
     {
         var url = $"/api/Playlist?playlistId={playListId}&includeVideoInfo={includeVideoInfo}";
         
-        var result = await httpClient.GetStringAsync(url);
+ /*       var result = await httpClient.GetStringAsync(url);
         await Console.Out.WriteLineAsync(result);
         var playlistInfo = JsonSerializer.Deserialize<PlaylistInfo>(result, DefaultSerializerOptions) ?? new PlaylistInfo();
-
-//        var playlistInfo = await httpClient.GetFromJsonAsync<PlaylistInfo>(url) ?? new PlaylistInfo();
+*/
+        var playlistInfo = await httpClient.GetFromJsonAsync<PlaylistInfo>(url, SourceGenerationContext.Default.PlaylistInfo) ?? new PlaylistInfo();
         return playlistInfo;
     }
 

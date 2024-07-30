@@ -31,8 +31,8 @@ public class TestAppData(ITestOutputHelper output)
         {
             PropertyNameCaseInsensitive = true
         };
-        var playlistInfo =  JsonSerializer.Deserialize<PlaylistInfo>(stream,
-            myOptions);
+        var playlistInfo =  JsonSerializer.Deserialize<PlaylistInfo>(stream
+            , SourceGenerationContext.Default.PlaylistInfo);
         playlistInfo.Should().NotBeNull();
         playlistInfo.VideoInfoList.Should().NotBeNull();
         playlistInfo.VideoInfoList.Should().NotBeEmpty();
