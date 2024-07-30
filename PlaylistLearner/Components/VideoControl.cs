@@ -14,7 +14,7 @@ public class VideoControl
     public PlayerState State { get; set; } = PlayerState.Unstarted;
     public bool Ready { get; set; } = false;
     public bool HasStartedPlaying { get; set; } = false;
-    public int ItemStart = 0;
+    public double ItemStart = 0;
 
     public VideoControl(IJSRuntime ijsRuntime)
     {
@@ -85,7 +85,7 @@ public class VideoControl
         await JsRuntime.InvokeVoidAsync("normalSpeed");
     }
     
-    public async Task  SeekTo(int seconds, bool allowSeekAhead=true)
+    public async Task  SeekTo(double seconds, bool allowSeekAhead=true)
     {
         await JsRuntime.InvokeVoidAsync("seekTo", seconds, allowSeekAhead);
     }
@@ -98,7 +98,7 @@ public class VideoControl
         ItemStart = 0;
     }
 
-    public async Task PrepareVideo(VideoPlayer videoPlayer, string paddingPercent, string videoId, int itemStart, int itemEnd)
+    public async Task PrepareVideo(VideoPlayer videoPlayer, string paddingPercent, string videoId, double itemStart, double itemEnd)
     {
         VideoPlayer = videoPlayer;
         await JsRuntime.InvokeVoidAsync("prepareVideo", paddingPercent, videoId,itemStart);//, itemEnd);
@@ -158,5 +158,10 @@ public class VideoControl
             HasStartedPlaying = true;
         }
         VideoPlayer?.OnPlayerStateChange();
+    }
+    
+    public async Task SetPass(string pass)
+    {
+        await JsRuntime.InvokeVoidAsync("localStorage.setItem", "pass", pass);
     }
 }

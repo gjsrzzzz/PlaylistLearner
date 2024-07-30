@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Jalindi.VideoUtil;
+using Jalindi.VideoUtil.Model;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlaylistLearner;
 using PlaylistLearner.Model;
 using PlaylistYouTube.Service;
-using VideoUtil;
-using VideoUtil.Model;
 
 namespace PlaylistTest;
 

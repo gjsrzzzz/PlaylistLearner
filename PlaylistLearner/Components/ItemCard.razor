@@ -32,17 +32,25 @@
         {
             <h6 class="card-subtitle mb-2 text-muted">@AltName</h6>
         }
-        @if (Description.Length > 0)
+        @if (Description?.Length > 0)
         {
             <h6 class="card-text">@Description</h6>
         }
 
 
     </div>
+    <ErrorBoundary>
+        <ChildContent>
         @if (ShowVideos.Contains(Name))
         {
             <VideoPlayer Item="@Item" />
-        }
+        }  
+        </ChildContent>
+        <ErrorContent>
+            <p class="my-custom-class">Failed to load video</p>
+        </ErrorContent>
+    </ErrorBoundary>
+
     </div>
 @code {
     [Parameter]

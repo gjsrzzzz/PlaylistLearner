@@ -16,6 +16,8 @@ let reportedTime=-1;
 let currentVideoId='ue-P8DoJ29Q';
 let playerReady=false;
 
+window.onresize = alignVideo;
+
 async function poll( )
 {
     if (player===undefined || player.isMuted===undefined)
@@ -88,8 +90,7 @@ async function closeVideo() {
 function alignVideo()
 {
     var videoAreaElement = document.getElementById('video-area');
-    if (videoAreaElement !== undefined) {
-        playerHolder.style.display = null;
+    if (videoAreaElement !== undefined && playerHolder !== undefined && playerHolder.style.display !== "none") {
         var playerXRect = playerX.getBoundingClientRect();
         console.log("player rect", playerXRect.width, playerXRect.height);
         videoAreaElement.style.width=playerXRect.width+"px";
@@ -111,6 +112,7 @@ function alignVideo()
 
 function prepareVideo(paddingBottom, videoId, startSeconds, endSeconds) {
     playerX.style.paddingBottom=paddingBottom;
+    playerHolder.style.display = null;
     alignVideo();
     if (false) //currentVideoId===videoId)
     {
@@ -150,7 +152,9 @@ function pauseVideo()
 }
 function stopVideo()
 {
-    player.stopVideo();
+    if (player!== undefined && player.stopVideo !== undefined) {
+        player.stopVideo();
+    }
 }
 function muteVideo()
 {
