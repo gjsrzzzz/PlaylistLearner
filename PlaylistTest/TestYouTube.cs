@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,21 +17,8 @@ using Xunit.Abstractions;
 namespace PlaylistTest;
 
 
-public class TestYouTube
+public class TestYouTube(ITestOutputHelper output, IVideoProvider videoProvider, PlaylistService playlistService)
 {
-    private readonly IVideoProvider videoProvider;
-    private readonly PlaylistService playlistService;
-    
-    private readonly ITestOutputHelper output;
-
-    public TestYouTube(ITestOutputHelper output, IVideoProvider videoProvider, PlaylistService playlistService)
-    {
-        this.output = output;
-        this.videoProvider=videoProvider;
-        this.playlistService = playlistService;
-    }
-
-
     [Fact]
     public async void TestAccessToVideos()
     {
@@ -54,12 +40,12 @@ public class TestYouTube
         var playlist = await AssessPlaylist(playListId);
         playlist.Link.Should().Be("https://www.academiadesalsa.com/");
         playlist.LinkText.Should().Be("Academia de Salsa");
-        CheckItem(playlist, "Intro", 1);
-        CheckItem(playlist, "Salsa Music Band", 2);
-        CheckItem(playlist, "Basic Mambo", 10);
-        CheckItem(playlist, "Basic Mambo Side to Side", 11);
-        CheckItem(playlist, "Abanico Complicado con Adorno", 50);
-        CheckItem(playlist, "Bayamo con Echeverria", 51);
+        CheckItem(playlist, "Intro Basics", 1);
+        CheckItem(playlist, "Salsa Music Band 1", 2);
+        CheckItem(playlist, "Basic Step", 10);
+        CheckItem(playlist, "Basic Step Side to Side", 11);
+        CheckItem(playlist, "Abanico Complicado con Adorno", 51);
+        CheckItem(playlist, "Bayamo con Echeverria", 52);
         CheckItem(playlist, "Credits", 100);
         CheckItem(playlist, "Sacala", "Take her out", "Show follower off with right hand");
         CheckItem(playlist, "Ocho", "Eight");
@@ -109,6 +95,7 @@ public class TestYouTube
     private void CheckItem(Playlist playlist, string name, int order)
     {
         var item = playlist.Items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (item == null) throw new NullReferenceException($"Could not find item {name} in playlist {playlist.Name}\nItems {string.Join(", ", playlist.Items.Select(item=>item.Name))}");
         item.Should().NotBeNull();
         output.WriteLine(
             $"Item: {item.Name} {item.AltName} {item.Description}");
@@ -162,10 +149,10 @@ public class TestYouTube
         Assert.Equal(json,json2);
         output.WriteLine(
             $"Playlist Title: {playlistInfo.Title}\nItems {playlistInfo.VideoIdList.Count}\n{playlistInfo.Description.BriefRemaining(50)}");
-        if (playlistInfo.Tags.Count > 0)
+        if (playlistInfo.GetTags().Count > 0)
         {
             output.WriteLine(
-                $"Playlist Title: {playlistInfo.Tags.ToCommaDelimited()} ");
+                $"Playlist Title: {playlistInfo.GetTags().ToCommaDelimited()} ");
         }
 //        var videosInfo = await youtube.GetVideosInfo(playlistInfo.VideoIdList);
         var playlist = await playlistService.GetPlaylist(playListId);

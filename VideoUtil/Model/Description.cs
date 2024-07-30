@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Jalindi.VideoUtil.Model;
 
@@ -22,9 +21,9 @@ public class Description
             : Remaining);
     }
 
-    public List<TimeCode> TimeCodes { get; set;} = new();
+    public List<TimeCode> TimeCodes { get; set;} = [];
 
-    public List<KeyValuePair<string, string>> Tags { get; set;} = new();
+    public List<KeyValuePair<string, string>> Tags { get; set;} = [];
 
     public static readonly Description Empty = new();
 
@@ -254,10 +253,10 @@ public class Description
 public class TimeCode
 {
     public int Order { get; set; } = 0;
-    public bool ItemOnly { get; init; }
+    public bool ItemOnly { get; set; }
     public TimeSpan Start { get; set; }
     public TimeSpan End { get; set; }
-    public string Name { get; init; }
+    public string Name { get; set; }
     public string Key { get; set; }
     public bool Ignore { get; set; }
     public string AltName { get; set; }
