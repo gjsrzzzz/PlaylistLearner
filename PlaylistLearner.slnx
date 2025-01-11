@@ -1,0 +1,23 @@
+﻿<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/Solution Items/Workflows/">
+    <File Path=".github\workflows\azure-static-web-apps-academia05.yml" />
+    <File Path=".github\workflows\azure-static-web-apps-dancebachata.yml" />
+    <File Path=".github\workflows\azure-static-web-apps-dancekizomba.yml" />
+    <File Path=".github\workflows\azure-static-web-apps-dancesalsa.yml" />
+    <File Path=".github\workflows\azure-static-web-apps-george-petzold.yml" />
+    <File Path=".github\workflows\checkov.yml" />
+    <File Path=".github\workflows\azure-static-web-apps-mlf2022.yml" />
+    <File Path=".github\workflows\master_playlistlearner.yml" />
+  </Folder>
+  <Project Path="PlaylistApiClient\PlaylistApiClient.csproj" Type="Classic C#" />
+  <Project Path="PlaylistApi\PlaylistApi.csproj" Type="Classic C#" />
+  <Project Path="PlaylistLearner\PlaylistLearner.csproj" Type="Classic C#" />
+  <Project Path="PlaylistTest\PlaylistTest.csproj" Type="Classic C#" />
+  <Project Path="PlaylistYouTube\PlaylistYouTube.csproj" Type="Classic C#" />
+  <Project Path="VideoUtil\VideoUtil.csproj" Type="Classic C#" />
+  <Project Path="YouTubeSourceGenTest\YouTubeSourceGenTest.csproj" Type="Classic C#" />
+  <Project Path="YouTubeSourceGen\YouTubeSourceGen.csproj" Type="Classic C#" />
+</Solution>
