@@ -12,7 +12,6 @@ using PlaylistLearner;
 using PlaylistLearner.Model;
 using PlaylistLearner.Playlists;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace PlaylistTest;
 
@@ -146,7 +145,7 @@ public class TestYouTube(ITestOutputHelper output, IVideoProvider videoProvider,
         var json = JsonSerializer.Serialize(playlistInfo);
         var playlistInfo2 = JsonSerializer.Deserialize<PlaylistInfo>(json);
         var json2 = JsonSerializer.Serialize(playlistInfo2);
-        Assert.Equal(json,json2);
+        json.Should().Equals(json2);
         output.WriteLine(
             $"Playlist Title: {playlistInfo.Title}\nItems {playlistInfo.VideoIdList.Count}\n{playlistInfo.Description.BriefRemaining(50)}");
         if (playlistInfo.GetTags().Count > 0)
@@ -170,7 +169,7 @@ public class TestYouTube(ITestOutputHelper output, IVideoProvider videoProvider,
 
     private void CheckVideo(VideoInfo videoInfo)
     {
-        Assert.True(videoInfo.Valid);
+        videoInfo.Valid.Should().BeTrue();
         output.WriteLine(
             $"Video Title: {videoInfo.Title}\nSize: {videoInfo.Width} {videoInfo.Height} {videoInfo.AspectRatio.RatioText()} {videoInfo.AspectRatio.Ratio()} {videoInfo.ActualRatio}");
         output.WriteLine($"Duration: {videoInfo.Duration}");

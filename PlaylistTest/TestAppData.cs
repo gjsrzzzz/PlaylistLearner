@@ -3,7 +3,6 @@ using System.Text.Json;
 using FluentAssertions;
 using Jalindi.VideoUtil.Model;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace PlaylistTest;
 
